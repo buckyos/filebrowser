@@ -1,0 +1,10 @@
+{
+    "pkg_name": "buckyos-filebrowser-app",
+    "version": "0.4.0",
+    "author": "buckyos.io",
+    "description": {
+        "detail": "buckyos file browser"
+    },
+    "category": "app_bin",
+    "pub_time": 0
+}
