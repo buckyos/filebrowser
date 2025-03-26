@@ -28,5 +28,15 @@
     },
     "deps":{
 
+    },
+    "install_config" : {
+        "data_mount_point" : ["/srv/","/database/","/config/"],
+        "cache_mount_point" : [],
+        "local_cache_mount_point" : [],
+        "tcp_ports" : {
+            "www":80
+        },
+        "udp_ports" : {
+        }
     }
 }

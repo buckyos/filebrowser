@@ -47,10 +47,12 @@ def build_web_pages():
 
 def build_app(os_name, arch_name):
     # 设置构建环境变量
+    docker_file = "./Dockerfile.s6"
     env = os.environ.copy()
     env["GOOS"] = os_name
     if arch_name == "aarch64":
         env["GOARCH"] = "arm64"
+        docker_file = "./Dockerfile.s6.aarch64"
     else:
         env["GOARCH"] = arch_name
     
@@ -66,7 +68,7 @@ def build_app(os_name, arch_name):
         pkg_meta = process_pkg_meta("./publish/docker_pkg_meta.json", f"{sub_pkg_dir}/.pkg_meta.json", pkg_id);
         pkg_version = pkg_meta["version"];
         image_name = f"{docker_username}/nightly-{app_name}:{pkg_version}-{arch_name}"
-        result = subprocess.run(["docker", "buildx", "build", "--platform", f"linux/{arch_name}", "-t", image_name, "."])
+        result = subprocess.run(["docker", "buildx", "build", "--platform", f"linux/{arch_name}", "-t", image_name, "-f",docker_file,"."])
         if result.returncode != 0:
             print(f"Docker构建失败: {os_name}-{arch_name}")
             sys.exit(1)
@@ -120,7 +122,7 @@ def build_app(os_name, arch_name):
         app_doc["deps"][pkg_id] = pkg_version
 
 def main():
-    build_web_pages();
+    #build_web_pages();
     create_output_dir(output_dir);
     app_doc["deps"] = {};
 
