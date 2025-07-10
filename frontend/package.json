@@ -24,6 +24,7 @@
     "ace-builds": "^1.37.5",
     "core-js": "^3.40.0",
     "dayjs": "^1.11.10",
+    "dompurify": "^3.2.6",
     "epubjs": "^0.3.93",
     "filesize": "^10.1.1",
     "js-base64": "^3.7.7",
@@ -69,7 +70,7 @@
     "postcss": "^8.5.1",
     "prettier": "^3.4.2",
     "terser": "^5.37.0",
-    "vite": "^6.0.11",
+    "vite": "^6.1.6",
     "vite-plugin-compression2": "^1.0.0",
     "vue-tsc": "^2.2.0"
   },
