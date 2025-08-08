@@ -2,6 +2,65 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.42.2](https://github.com/filebrowser/filebrowser/compare/v2.42.1...v2.42.2) (2025-08-06)
+
+
+### Bug Fixes
+
+* show file upload errors ([06e8713](https://github.com/filebrowser/filebrowser/commit/06e8713fa55065d38f02499d3e8d39fc86926cab))
+
+
+### Refactorings
+
+* upload progress calculation ([#5350](https://github.com/filebrowser/filebrowser/issues/5350)) ([c14cf86](https://github.com/filebrowser/filebrowser/commit/c14cf86f8304e01d804e01a7eef5ea093627ef37))
+
+### [2.42.1](https://github.com/filebrowser/filebrowser/compare/v2.42.0...v2.42.1) (2025-07-31)
+
+
+### Features
+
+* Translate frontend/src/i18n/en.json in sk  ([14ee054](https://github.com/filebrowser/filebrowser/commit/14ee0543599f2ec73b7f5d2dbd8415f47fe592aa))
+* Translate frontend/src/i18n/en.json in vi ([75baf7c](https://github.com/filebrowser/filebrowser/commit/75baf7ce337671a1045f897ba4a19967a31b1aec))
+
+
+### Bug Fixes
+
+* directory mode on config init ([4ff6347](https://github.com/filebrowser/filebrowser/commit/4ff634715543b65878943273dff70f340167900b))
+
+## [2.42.0](https://github.com/filebrowser/filebrowser/compare/v2.41.0...v2.42.0) (2025-07-27)
+
+
+### Features
+
+* add Norwegian support ([#5332](https://github.com/filebrowser/filebrowser/issues/5332)) ([25e47c3](https://github.com/filebrowser/filebrowser/commit/25e47c3ce8b35b820b5370a4b8bfdf682bd5ae0b))
+* select item on file list after navigating back ([#5329](https://github.com/filebrowser/filebrowser/issues/5329)) ([cbeec6d](https://github.com/filebrowser/filebrowser/commit/cbeec6d225691723c4750d7f84122ebb14d662bf))
+* Translate frontend/src/i18n/en.json in no ([5eb3bf4](https://github.com/filebrowser/filebrowser/commit/5eb3bf40586c2ffc32f4834b5dd59f0eb719c1f7))
+* Translate frontend/src/i18n/en.json in sk ([07dfdce](https://github.com/filebrowser/filebrowser/commit/07dfdce8e4c371f4ca7480f3cef0bd66ff5c9abb))
+
+
+### Bug Fixes
+
+* norsk loading ([619f683](https://github.com/filebrowser/filebrowser/commit/619f6837b0d1ec6c654d30f4ecedd6696874721f))
+
+
+### Reverts
+
+* Revert "chore(release): 2.42.0" ([d778c19](https://github.com/filebrowser/filebrowser/commit/d778c192ae02c5e73781f7632e3b7276c5811e17))
+
+
+### Build
+
+* bump go version to 1.23.11 ([c7a5c7e](https://github.com/filebrowser/filebrowser/commit/c7a5c7efee2b2bede89ec90bafd1af61c39519ff))
+* bump to go 1.24 ([c1b0207](https://github.com/filebrowser/filebrowser/commit/c1b0207800b4bb52c8dd459c1d69ce0f785473b6))
+
+## [2.41.0](https://github.com/filebrowser/filebrowser/compare/v2.40.2...v2.41.0) (2025-07-22)
+
+
+### Features
+
+* Allow file and directory creation modes to be configured ([21ad653](https://github.com/filebrowser/filebrowser/commit/21ad653b7eb246c0e95ccdc131f8d59267de7818)), closes [#5316](https://github.com/filebrowser/filebrowser/issues/5316) [#5200](https://github.com/filebrowser/filebrowser/issues/5200)
+* better error handling for sys kill signals ([1582b8b](https://github.com/filebrowser/filebrowser/commit/1582b8b2cd1c62fa93e60ca9b4e740e940b02e84))
+
 ### [2.40.2](https://github.com/filebrowser/filebrowser/compare/v2.40.1...v2.40.2) (2025-07-17)
 
 
