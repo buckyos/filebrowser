@@ -127,17 +127,23 @@ def main():
     app_doc["deps"] = {};
 
     build_app("linux", "amd64");
+    print("#=> linux amd64 build done");
     build_app("linux", "aarch64");
+    print("#=> linux aarch64 build done");
 
     if is_system_app:
         build_app("windows", "amd64");
+        print("#=> windows amd64 build done");
         build_app("darwin", "amd64");
+        print("#=> darwin amd64 build done");
         build_app("darwin", "aarch64");
+        print("#=> darwin aarch64 build done");
     
     app_doc["pub_time"] = int(time.time())
     app_doc["exp"] = int(time.time()) + 3600 * 24 * 365 * 3
     json.dump(app_doc, open(f"{output_dir}/{app_name}.doc.json", "w"));
     print(f"packed app_doc: {app_doc}");
+    print("^ ^ all build done ^ ^, output dir: ", output_dir);
     # 使用buckycli pub_pkg 发布pkg到zone内
 if __name__ == "__main__":
     main();
