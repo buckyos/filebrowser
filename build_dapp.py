@@ -143,6 +143,7 @@ def main():
     app_doc["exp"] = int(time.time()) + 3600 * 24 * 365 * 3
     json.dump(app_doc, open(f"{output_dir}/{app_name}.doc.json", "w"));
     print(f"packed app_doc: {app_doc}");
+    print("\n--------------------------------");
     print("^ ^ all build done ^ ^, output dir: ", output_dir);
     # 使用buckycli pub_pkg 发布pkg到zone内
 if __name__ == "__main__":
