@@ -48,17 +48,17 @@ def pack_packages(pkg_dir, target_dir):
         if not os.path.isdir(pkg_path):
             continue
             
-        # 检查是否有有效的.pkg_meta.json
-        meta_file = os.path.join(pkg_path, ".pkg_meta.json")
+        # 检查是否有有效的pkg_meta.json
+        meta_file = os.path.join(pkg_path, "pkg_meta.json")
         if not os.path.exists(meta_file):
-            print(f"跳过 {pkg_path}: 没有找到 .pkg_meta.json")
+            print(f"跳过 {pkg_path}: 没有找到 pkg_meta.json")
             continue
             
         try:
             with open(meta_file, 'r') as f:
                 meta_data = json.load(f)
                 if "pkg_name" not in meta_data or "version" not in meta_data:
-                    print(f"跳过 {pkg_path}: .pkg_meta.json 缺少必要字段")
+                    print(f"跳过 {pkg_path}: pkg_meta.json 缺少必要字段")
                     continue
                     
             # 调用buckycli pack_pkg命令打包
