@@ -1,12 +1,12 @@
 {
     "pkg_name":"buckyos-filebrowser",
-    "version":"0.4.0",
+    "version":"0.4.1",
     "tag":"latest",
     "app_name" : "BuckyOS File Browser",
     "description" : {
         "detail":"BuckyOS File Browser"
     },
-    "author" : "buckyos.io",
+    "author" : "did:web:buckyos.ai",
     "pub_time":0,
     "exp":0,
     "pkg_list" : {
