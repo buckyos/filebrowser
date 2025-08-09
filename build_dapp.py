@@ -65,7 +65,7 @@ def build_app(os_name, arch_name):
         pkg_id = f"nightly-{os_name}-{arch_name}.{app_name}-img";
         sub_pkg_dir = os.path.join(output_dir, pkg_id);
         create_output_dir(sub_pkg_dir);
-        pkg_meta = process_pkg_meta("./publish/docker_pkg_meta.json", f"{sub_pkg_dir}/.pkg_meta.json", pkg_id);
+        pkg_meta = process_pkg_meta("./publish/docker_pkg_meta.json", f"{sub_pkg_dir}/pkg_meta.json", pkg_id);
         pkg_version = pkg_meta["version"];
         image_name = f"{docker_username}/nightly-{app_name}:{pkg_version}-{arch_name}"
         result = subprocess.run(["docker", "buildx", "build", "--platform", f"linux/{arch_name}", "-t", image_name, "-f",docker_file,"."])
@@ -97,8 +97,8 @@ def build_app(os_name, arch_name):
         sub_pkg_dir = os.path.join(output_dir, pkg_id);
         create_output_dir(sub_pkg_dir);
         #复制./publish/app_pkg/的所有文件到sub_pkg_dir
-        subprocess.run(["cp", "-r", "./publish/app_pkg/", sub_pkg_dir]);
-        pkg_meta = process_pkg_meta("./publish/app_pkg/.pkg_meta.json", f"{sub_pkg_dir}/.pkg_meta.json", pkg_id);
+        subprocess.run(["cp", "./publish/app_pkg/*", sub_pkg_dir]);
+        pkg_meta = process_pkg_meta("./publish/app_pkg/.pkg_meta.json", f"{sub_pkg_dir}/pkg_meta.json", pkg_id);
         pkg_version = pkg_meta["version"];
         print(pkg_meta);
 
@@ -112,7 +112,7 @@ def build_app(os_name, arch_name):
         sub_pkg_dir = os.path.join(output_dir, pkg_id);
         create_output_dir(sub_pkg_dir);
         subprocess.run(["cp", "-r", "./publish/app_pkg/", sub_pkg_dir]);
-        pkg_meta = process_pkg_meta("./publish/app_pkg/.pkg_meta.json", f"{sub_pkg_dir}/.pkg_meta.json", pkg_id);
+        pkg_meta = process_pkg_meta("./publish/app_pkg/.pkg_meta.json", f"{sub_pkg_dir}/pkg_meta.json", pkg_id);
         pkg_version = pkg_meta["version"];
         print(pkg_meta);
 
@@ -120,6 +120,8 @@ def build_app(os_name, arch_name):
 
         app_doc["pkg_list"][f"{arch_name}_apple_app"]["pkg_id"] = f"{pkg_id}#{pkg_version}";
         app_doc["deps"][pkg_id] = pkg_version
+    
+
 
 def main():
     #build_web_pages();

@@ -132,13 +132,13 @@ def main():
     packed_dirs = pack_packages(pkg_dir, target_dir)
     
     # 发布包
-    if not publish_packages(packed_dirs):
-        print("发布包失败")
-        return 1
+    #if not publish_packages(packed_dirs):
+    #    print("发布包失败")
+    #    return 1
     
-    if not publish_app():
-        print("发布app失败")
-        return 1
+    #if not publish_app():
+    #    print("发布app失败")
+    #    return 1
 
     print("所有操作完成")
     return 0
