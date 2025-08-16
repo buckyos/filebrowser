@@ -16,14 +16,17 @@ docker_username = "buckyos";
 print("APP_DOC: ", app_doc);
 version = app_doc["version"];
 app_name = app_doc["pkg_name"];
-
+app_base_dir = "/opt/buckyosci/apps/"
+app_raw_dir = "/opt/buckyosci/app_build/"
 platform_name = platform.system().lower()
 if platform_name == "windows":
     sys_temp_dir = tempfile.gettempdir()
 else:
     sys_temp_dir = "/tmp/"
-output_dir = os.path.join(sys_temp_dir, app_name);
+
+output_dir = os.path.join(app_raw_dir, app_name, version);
 print("OUTPUT: ", output_dir);
+all_images = [];
 
 def process_pkg_meta(pkg_meta_path,new_path,pkg_name):
     pkg_meta = json.load(open(pkg_meta_path));
@@ -80,10 +83,12 @@ def build_app(os_name, arch_name):
         # 导出Docker镜像为tar文件
         tar_file_path = os.path.join(sub_pkg_dir, f"{app_name}.tar")
         result = subprocess.run(["docker", "save", "-o", tar_file_path, image_name])
+        
         if result.returncode != 0:
             print(f"Docker镜像导出失败: {image_name}")
             sys.exit(1)
         print(f"Docker image exported to: {tar_file_path}")
+        all_images.append(image_name);
     
         # 复制必要的元数据文件到包目录
 
@@ -125,6 +130,7 @@ def build_app(os_name, arch_name):
 
 def main():
     #build_web_pages();
+
     create_output_dir(output_dir);
     app_doc["deps"] = {};
 
@@ -147,6 +153,8 @@ def main():
     print(f"packed app_doc: {app_doc}");
     print("\n--------------------------------");
     print("^ ^ all build done ^ ^, output dir: ", output_dir);
+    for image in all_images:
+        print(f"  - create docker image: {image}");
     # 使用buckycli pub_pkg 发布pkg到zone内
 if __name__ == "__main__":
     main();

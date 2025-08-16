@@ -15,35 +15,28 @@ docker_username = "buckyos";
 print("APP_DOC: ", app_doc);
 version = app_doc["version"];
 app_name = app_doc["pkg_name"];
+app_base_dir = "/opt/buckyosci/apps/"
+app_raw_dir = "/opt/buckyosci/app_build/"
+build_target_dir = os.path.join(app_raw_dir, app_name, version);
+app_pkg_dir = os.path.join(app_base_dir, app_name, version);
 
 buckycli_path = os.path.join("/opt/buckyos/bin/buckycli", "buckycli")
 if platform.system() == "Windows":
     buckycli_path += ".exe"
 
 def get_default_pkg_dir():
-    """获取默认的待发布的pack的pkg目录"""
-    if platform.system() == "Windows":
-        sys_temp_dir = tempfile.gettempdir()
-    else:
-        sys_temp_dir = "/tmp/"
-    return os.path.join(sys_temp_dir, app_name)
+    return app_pkg_dir;
 
 def get_default_target_dir():
-    """获取默认的输出目录"""
-    if platform.system() == "Windows":
-        sys_temp_dir = tempfile.gettempdir()
-    else:
-        sys_temp_dir = "/tmp/"
-    target_dir = os.path.join(sys_temp_dir, f"{app_name}_pkg_out")
-    os.makedirs(target_dir, exist_ok=True)
-    return target_dir
+    os.makedirs(build_target_dir, exist_ok=True)
+    return build_target_dir
 
-def pack_packages(pkg_dir, target_dir):
+def pack_packages(input_dir, target_dir):
     """打包所有有效的包"""
     packed_dirs = []
     
     # 扫描所有包目录
-    pkg_dirs = glob.glob(os.path.join(pkg_dir, "*"))
+    pkg_dirs = glob.glob(os.path.join(input_dir, "*"))
     for pkg_path in pkg_dirs:
         if not os.path.isdir(pkg_path):
             continue
@@ -109,36 +102,31 @@ def publish_app():
     
 
 def main():
-    # 获取默认目录
-    pkg_dir = get_default_pkg_dir()
-    real_app_doc = json.load(open(f"{pkg_dir}/{app_name}.doc.json"))
+    # 获取build结果目录
     target_dir = get_default_target_dir()
-    json.dump(real_app_doc, open(f"{target_dir}/{app_name}.doc.json", "w"))
+    real_app_doc = json.load(open(f"{target_dir}/{app_name}.doc.json"))
+    # 获取打包后的pkg目录 
+    pkg_dir = get_default_pkg_dir()
     
-    # 处理命令行参数
-    if len(sys.argv) > 1:
-        pkg_dir = sys.argv[1]
-    if len(sys.argv) > 2:
-        target_dir = sys.argv[2]
+    print(f"build target dir: {target_dir}")
+    print(f"publish pkg dir: {pkg_dir}")
+
     
-    print(f"使用包目录: {pkg_dir}")
-    print(f"使用输出目录: {target_dir}")
-    
-    if not os.path.exists(pkg_dir):
-        print(f"错误: 包目录 {pkg_dir} 不存在")
+    if not os.path.exists(target_dir):
+        print(f"!!! build target dir {target_dir} 不存在")
         return 1
         
     # 打包所有包
-    packed_dirs = pack_packages(pkg_dir, target_dir)
+    packed_dirs = pack_packages(target_dir, pkg_dir)
     
     # 发布包
-    #if not publish_packages(packed_dirs):
-    #    print("发布包失败")
-    #    return 1
+    if not publish_packages(packed_dirs):
+       print("发布包失败")
+       return 1
     
-    #if not publish_app():
-    #    print("发布app失败")
-    #    return 1
+    if not publish_app():
+       print("发布app失败")
+       return 1
 
     print("所有操作完成")
     return 0
