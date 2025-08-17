@@ -103,7 +103,7 @@ def build_app(os_name, arch_name):
         create_output_dir(sub_pkg_dir);
         #复制./publish/app_pkg/的所有文件到sub_pkg_dir
         os.system(f"cp ./publish/app_pkg/* {sub_pkg_dir}")
-        pkg_meta = process_pkg_meta("./publish/app_pkg/.pkg_meta.json", f"{sub_pkg_dir}/pkg_meta.json", pkg_id);
+        pkg_meta = process_pkg_meta("./publish/app_pkg/pkg_meta.json", f"{sub_pkg_dir}/pkg_meta.json", pkg_id);
         pkg_version = pkg_meta["version"];
         print(pkg_meta);
 
@@ -117,7 +117,7 @@ def build_app(os_name, arch_name):
         sub_pkg_dir = os.path.join(output_dir, pkg_id);
         create_output_dir(sub_pkg_dir);
         os.system(f"cp ./publish/app_pkg/* {sub_pkg_dir}")
-        pkg_meta = process_pkg_meta("./publish/app_pkg/.pkg_meta.json", f"{sub_pkg_dir}/pkg_meta.json", pkg_id);
+        pkg_meta = process_pkg_meta("./publish/app_pkg/pkg_meta.json", f"{sub_pkg_dir}/pkg_meta.json", pkg_id);
         pkg_version = pkg_meta["version"];
         print(pkg_meta);
 
