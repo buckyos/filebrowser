@@ -129,7 +129,7 @@ def build_app(os_name, arch_name):
 
 
 def main():
-    #build_web_pages();
+    build_web_pages();
 
     create_output_dir(output_dir);
     app_doc["deps"] = {};
