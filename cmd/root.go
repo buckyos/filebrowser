@@ -485,17 +485,18 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) error {
 	password := getStringParam(flags, "password")
 
 	if password == "" {
-		var pwd string
-		pwd, err = users.RandomPwd(set.MinimumPasswordLength)
+		//var pwd string
+		password, err = users.HashPwd("buckyos")
+		//pwd, err = users.RandomPwd(set.MinimumPasswordLength)
 		if err != nil {
 			return err
 		}
 
-		log.Printf("User '%s' initialized with randomly generated password: %s\n", username, pwd)
-		password, err = users.ValidateAndHashPwd(pwd, set.MinimumPasswordLength)
-		if err != nil {
-			return err
-		}
+		//log.Printf("User '%s' initialized with randomly generated password: %s\n", username, pwd)
+		//password, err = users.ValidateAndHashPwd(pwd, set.MinimumPasswordLength)
+		//if err != nil {
+		//	return err
+		//}
 	} else {
 		log.Printf("User '%s' initialize wth user-provided password\n", username)
 	}
