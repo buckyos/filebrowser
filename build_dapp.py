@@ -53,6 +53,7 @@ def build_app(os_name, arch_name):
     docker_file = "./Dockerfile.s6"
     env = os.environ.copy()
     env["GOOS"] = os_name
+    env["CGO_ENABLED"] = "0"
     if arch_name == "aarch64":
         env["GOARCH"] = "arm64"
         docker_file = "./Dockerfile.s6.aarch64"
