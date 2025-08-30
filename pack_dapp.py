@@ -92,6 +92,7 @@ def main():
         
     # 打包所有包
     packed_dirs = pack_packages(target_dir, pkg_dir)
+    json.dump(real_app_doc, open(f"{pkg_dir}/app.doc.json", "w"));
     
 
     print("Done. Packed pkg dirs: ", packed_dirs);

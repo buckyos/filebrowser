@@ -42,7 +42,7 @@ def publish_packages(packed_dirs):
     
 def publish_app(packed_dirs):
     """发布app到zone内"""
-    cmd = [buckycli_path, "pub_app", "--app_name", app_name,"--target_dir",packed_dirs]
+    cmd = [buckycli_path, "pub_app","--target_dir",packed_dirs]
     print(f"执行命令: {' '.join(cmd)}")
     result = subprocess.run(cmd, capture_output=True, text=True)
     
@@ -61,11 +61,6 @@ def main():
     if not os.path.exists(pkg_dir):
         print(f"!!! packed dapp  dir {pkg_dir} 不存在")
         return 1
-        
-    # 发布包
-    if not publish_packages(pkg_dir):
-       print("发布包失败")
-       return 1
     
     if not publish_app():
        print("发布app失败")

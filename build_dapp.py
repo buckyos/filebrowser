@@ -93,9 +93,9 @@ def build_app(os_name, arch_name):
     
         # 复制必要的元数据文件到包目录
 
-        app_doc["pkg_list"][f"{arch_name}_docker_image"]["pkg_id"] = f"{pkg_id}#{pkg_version}";
+        app_doc["pkg_list"][f"{arch_name}_docker_image"]["pkg_id"] = f"{pkg_id}";
         app_doc["pkg_list"][f"{arch_name}_docker_image"]["docker_image_name"] = f"buckyos/nightly-{app_name}:{version}-{arch_name}"
-        app_doc["pkg_list"][f"{arch_name}_docker_image"]["docker_image_hash"] = image_hash;
+        #app_doc["pkg_list"][f"{arch_name}_docker_image"]["docker_image_hash"] = image_hash;
         app_doc["deps"][pkg_id] = pkg_version
 
     if os_name == "windows":
@@ -110,7 +110,7 @@ def build_app(os_name, arch_name):
 
         os.rename("filebrowser.exe", os.path.join(sub_pkg_dir, f"filebrowser.exe"));
 
-        app_doc["pkg_list"][f"{arch_name}_win_app"]["pkg_id"] = f"{pkg_id}#{pkg_version}";
+        app_doc["pkg_list"][f"{arch_name}_win_app"]["pkg_id"] = f"{pkg_id}";
         app_doc["deps"][pkg_id] = pkg_version
      
     if os_name == "darwin":
@@ -124,7 +124,7 @@ def build_app(os_name, arch_name):
 
         os.rename("filebrowser", os.path.join(sub_pkg_dir, f"filebrowser"));
 
-        app_doc["pkg_list"][f"{arch_name}_apple_app"]["pkg_id"] = f"{pkg_id}#{pkg_version}";
+        app_doc["pkg_list"][f"{arch_name}_apple_app"]["pkg_id"] = f"{pkg_id}";
         app_doc["deps"][pkg_id] = pkg_version
     
 
@@ -150,7 +150,7 @@ def main():
     
     app_doc["pub_time"] = int(time.time())
     app_doc["exp"] = int(time.time()) + 3600 * 24 * 365 * 3
-    json.dump(app_doc, open(f"{output_dir}/{app_name}.doc.json", "w"));
+    json.dump(app_doc, open(f"{output_dir}/app.doc.json", "w"));
     print(f"packed app_doc: {app_doc}");
     print("\n--------------------------------");
     print("^ ^ all build done ^ ^, output dir: ", output_dir);
