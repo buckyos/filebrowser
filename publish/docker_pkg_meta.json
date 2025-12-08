@@ -1,6 +1,6 @@
 {
-    "pkg_name": "buckyos-filebrowser-img",
-    "version": "0.4.1",
+    "pkg_name": "buckyos_filebrowser-img",
+    "version": "0.5.1",
     "author": "did:web:buckyos.ai",
     "description": {
         "detail": "buckyos file browser docker image"

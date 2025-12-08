@@ -43,7 +43,7 @@ def create_output_dir(dir_path):
     return dir_path;
 
 def build_web_pages():
-    result = subprocess.run(["make", "build-frontend"])
+    result = subprocess.run(["task", "build:frontend"])
     if result.returncode != 0:
         print("构建前端失败")
         sys.exit(1)
@@ -60,7 +60,7 @@ def build_app(os_name, arch_name):
     else:
         env["GOARCH"] = arch_name
     
-    result = subprocess.run(["make", "build-backend"], env=env)
+    result = subprocess.run(["task", "build:backend"], env=env)
     if result.returncode != 0:
         print(f"构建后端失败: {os_name}-{arch_name}")
         sys.exit(1)
@@ -69,6 +69,7 @@ def build_app(os_name, arch_name):
         pkg_id = f"nightly-{os_name}-{arch_name}.{app_name}-img";
         sub_pkg_dir = os.path.join(output_dir, pkg_id);
         create_output_dir(sub_pkg_dir);
+        print(f"sub_pkg_dir: {sub_pkg_dir} created.")
         pkg_meta = process_pkg_meta("./publish/docker_pkg_meta.json", f"{sub_pkg_dir}/pkg_meta.json", pkg_id);
         pkg_version = pkg_meta["version"];
         image_name = f"{docker_username}/nightly-{app_name}:{pkg_version}-{arch_name}"
