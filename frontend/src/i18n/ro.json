@@ -42,7 +42,9 @@
     "update": "Actualizează",
     "upload": "Încarcă",
     "openFile": "Open file",
-    "discardChanges": "Discard"
+    "discardChanges": "Discard",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Descarcă fișier",
@@ -74,7 +76,9 @@
     "sortByLastModified": "Ordonează dup ultima modificare",
     "sortByName": "Ordonează după nume",
     "sortBySize": "Ordonează după dimensiune",
-    "noPreview": "Preview is not available for this file."
+    "noPreview": "Preview is not available for this file.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "alege fișier sau director",
@@ -100,7 +104,11 @@
     "submit": "Autentificare",
     "username": "Utilizator",
     "usernameTaken": "Utilizatorul există",
-    "wrongCredentials": "Informații greșite"
+    "wrongCredentials": "Informații greșite",
+    "passwordTooShort": "Password must be at least {min} characters",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Permanent",
   "prompts": {
@@ -154,6 +162,7 @@
     "video": "Video"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrator",
     "allowCommands": "Execută comenzi",
@@ -161,6 +170,7 @@
     "allowNew": "Crează noi fișiere sau directoare",
     "allowPublish": "Publică noi pagini și postări",
     "allowSignup": "Permite utilizatorilor să se înregistreze",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(lasă gol pentru a nu schimba)",
     "branding": "Branding",
     "brandingDirectoryPath": "Calea către directorul de branding",
@@ -262,5 +272,10 @@
     "minutes": "Minute",
     "seconds": "Secunde",
     "unit": "Unitate de timp"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }

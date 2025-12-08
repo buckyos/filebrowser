@@ -1,8 +1,8 @@
 package files
 
 import (
-	"crypto/md5"  //nolint:gosec
-	"crypto/sha1" //nolint:gosec
+	"crypto/md5"
+	"crypto/sha1"
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
@@ -23,7 +23,7 @@ import (
 
 	"github.com/spf13/afero"
 
-	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
+	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/rules"
 )
 
@@ -90,7 +90,7 @@ func NewFileInfo(opts *FileOptions) (*FileInfo, error) {
 
 	if opts.Expand {
 		if file.IsDir {
-			if err := file.readListing(opts.Checker, opts.ReadHeader); err != nil { //nolint:govet
+			if err := file.readListing(opts.Checker, opts.ReadHeader); err != nil {
 				return nil, err
 			}
 			return file, nil
@@ -168,7 +168,7 @@ func stat(opts *FileOptions) (*FileInfo, error) {
 // algorithm. The checksums data is saved on File object.
 func (i *FileInfo) Checksum(algo string) error {
 	if i.IsDir {
-		return fbErrors.ErrIsDirectory
+		return fberrors.ErrIsDirectory
 	}
 
 	if i.Checksums == nil {
@@ -183,7 +183,6 @@ func (i *FileInfo) Checksum(algo string) error {
 
 	var h hash.Hash
 
-	//nolint:gosec
 	switch algo {
 	case "md5":
 		h = md5.New()
@@ -194,7 +193,7 @@ func (i *FileInfo) Checksum(algo string) error {
 	case "sha512":
 		h = sha512.New()
 	default:
-		return fbErrors.ErrInvalidOption
+		return fberrors.ErrInvalidOption
 	}
 
 	_, err = io.Copy(h, reader)

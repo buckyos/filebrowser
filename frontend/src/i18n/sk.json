@@ -42,7 +42,9 @@
     "update": "Aktualizovať",
     "upload": "Nahrať",
     "openFile": "Otvoriť súbor",
-    "discardChanges": "Zahodiť"
+    "discardChanges": "Zahodiť",
+    "saveChanges": "Uložiť zmeny",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Stiahnuť súbor",
@@ -74,7 +76,9 @@
     "sortByLastModified": "Zoradiť podľa dátumu",
     "sortByName": "Zoradiť podľa názvu",
     "sortBySize": "Zoradiť podľa veľkosti",
-    "noPreview": "Pre tento súbor nie je dostupný náhľad."
+    "noPreview": "Pre tento súbor nie je dostupný náhľad.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "vyberie súbor alebo priečinok",
@@ -100,7 +104,11 @@
     "submit": "Prihlásiť",
     "username": "Používateľské meno",
     "usernameTaken": "Meno je už obsadené",
-    "wrongCredentials": "Nesprávne prihlasovacie údaje"
+    "wrongCredentials": "Nesprávne prihlasovacie údaje",
+    "passwordTooShort": "Password must be at least {min} characters",
+    "logout_reasons": {
+      "inactivity": "Boli ste odhlásení z dôvodu nečinnosti."
+    }
   },
   "permanent": "Trvalé",
   "prompts": {
@@ -154,6 +162,7 @@
     "video": "Video"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrátor",
     "allowCommands": "Vykonávať príkazy",
@@ -161,6 +170,7 @@
     "allowNew": "Vytvárať nové súbory a priečinky",
     "allowPublish": "Zverejňovať nové príspevky a stránky",
     "allowSignup": "Povoliť registráciu používateľov",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(nechajte prázdne, aby sa nezmenilo)",
     "branding": "Vlastný vzhľad",
     "brandingDirectoryPath": "Cesta k priečinku s vlastným vzhľadom",
@@ -262,5 +272,10 @@
     "minutes": "Minúty",
     "seconds": "Sekundy",
     "unit": "Jednotka času"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }

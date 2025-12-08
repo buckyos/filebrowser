@@ -42,7 +42,9 @@
     "update": "Aktualizovat",
     "upload": "Nahrát",
     "openFile": "Otevřít soubor",
-    "discardChanges": "Zrušit změny"
+    "discardChanges": "Zrušit změny",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Stáhnout soubor",
@@ -74,7 +76,9 @@
     "sortByLastModified": "Seřadit podle poslední změny",
     "sortByName": "Seřadit podle názvu",
     "sortBySize": "Seřadit podle velikosti",
-    "noPreview": "Náhled pro tento soubor není k dispozici."
+    "noPreview": "Náhled pro tento soubor není k dispozici.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "vyberte soubor nebo adresář",
@@ -100,7 +104,11 @@
     "submit": "Přihlásit se",
     "username": "Uživatelské jméno",
     "usernameTaken": "Uživatelské jméno již existuje",
-    "wrongCredentials": "Nesprávné přihlašovací údaje"
+    "wrongCredentials": "Nesprávné přihlašovací údaje",
+    "passwordTooShort": "Password must be at least {min} characters",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Trvalý",
   "prompts": {
@@ -154,6 +162,7 @@
     "video": "Video"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrátor",
     "allowCommands": "Povolit příkazy",
@@ -161,6 +170,7 @@
     "allowNew": "Vytvářet nové soubory a adresáře",
     "allowPublish": "Publikovat nové příspěvky a stránky",
     "allowSignup": "Povolit uživatelům registraci",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(ponechte prázdné pro zabránění změnám)",
     "branding": "Branding",
     "brandingDirectoryPath": "Cesta ke složce s brandingem",
@@ -262,5 +272,10 @@
     "minutes": "Minuty",
     "seconds": "Sekundy",
     "unit": "Časová jednotka"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }

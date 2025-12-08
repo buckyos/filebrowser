@@ -1,6 +1,7 @@
 interface ISettings {
   signup: boolean;
   createUserDir: boolean;
+  hideLoginButton: boolean;
   minimumPasswordLength: number;
   userHomeBasePath: string;
   defaults: SettingsDefaults;
@@ -21,6 +22,7 @@ interface SettingsDefaults {
   commands: any[];
   hideDotfiles: boolean;
   dateFormat: boolean;
+  aceEditorTheme: string;
 }
 
 interface SettingsBranding {

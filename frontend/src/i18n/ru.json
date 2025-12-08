@@ -42,7 +42,9 @@
     "update": "Обновить",
     "upload": "Загрузить",
     "openFile": "Открыть файл",
-    "discardChanges": "Отказаться"
+    "discardChanges": "Отказаться",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Скачать файл",
@@ -74,7 +76,9 @@
     "sortByLastModified": "Сортировка по дате изменения",
     "sortByName": "Сортировка по имени",
     "sortBySize": "Сортировка по размеру",
-    "noPreview": "Предварительный просмотр для этого файла недоступен."
+    "noPreview": "Предварительный просмотр для этого файла недоступен.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "выбрать файл или каталог",
@@ -100,7 +104,11 @@
     "submit": "Войти",
     "username": "Имя пользователя",
     "usernameTaken": "Данное имя пользователя уже занято",
-    "wrongCredentials": "Неверные данные"
+    "wrongCredentials": "Неверные данные",
+    "passwordTooShort": "Password must be at least {min} characters",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Постоянный",
   "prompts": {
@@ -154,6 +162,7 @@
     "video": "Видео"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Админ",
     "administrator": "Администратор",
     "allowCommands": "Запуск команд",
@@ -161,6 +170,7 @@
     "allowNew": "Создание новых файлов или каталогов",
     "allowPublish": "Публикация новых записей и страниц",
     "allowSignup": "Разрешить пользователям регистрироваться",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(оставьте поле пустым, чтобы избежать изменений)",
     "branding": "Брендинг",
     "brandingDirectoryPath": "Путь к каталогу брендов",
@@ -262,5 +272,10 @@
     "minutes": "Минуты",
     "seconds": "Секунды",
     "unit": "Единица времени"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }

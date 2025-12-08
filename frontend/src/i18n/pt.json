@@ -42,7 +42,9 @@
     "update": "Atualizar",
     "upload": "Enviar",
     "openFile": "Open file",
-    "discardChanges": "Discard"
+    "discardChanges": "Discard",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Descarregar ficheiro",
@@ -74,7 +76,9 @@
     "sortByLastModified": "Ordenar pela última alteração",
     "sortByName": "Ordenar pelo nome",
     "sortBySize": "Ordenar pelo tamanho",
-    "noPreview": "Preview is not available for this file."
+    "noPreview": "Preview is not available for this file.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "selecionar pasta ou ficheiro",
@@ -100,7 +104,11 @@
     "submit": "Entrar na conta",
     "username": "Nome de utilizador",
     "usernameTaken": "O nome de utilizador já está registado",
-    "wrongCredentials": "Dados errados"
+    "wrongCredentials": "Dados errados",
+    "passwordTooShort": "Password must be at least {min} characters",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Permanente",
   "prompts": {
@@ -154,6 +162,7 @@
     "video": "Vídeos"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrador",
     "allowCommands": "Executar comandos",
@@ -161,6 +170,7 @@
     "allowNew": "Criar novos ficheiros e pastas",
     "allowPublish": "Publicar novas páginas e conteúdos",
     "allowSignup": "Permitir que os utilizadores criem contas",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(deixe em branco para manter)",
     "branding": "Marca",
     "brandingDirectoryPath": "Caminho da pasta de marca",
@@ -262,5 +272,10 @@
     "minutes": "Minutos",
     "seconds": "Segundos",
     "unit": "Unidades de tempo"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }

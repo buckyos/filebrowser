@@ -42,7 +42,9 @@
     "update": "Frissítés",
     "upload": "Feltöltés",
     "openFile": "Fájl megnyitása",
-    "discardChanges": "Discard"
+    "discardChanges": "Discard",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Fájl letöltése",
@@ -74,7 +76,9 @@
     "sortByLastModified": "Rendezés utolsó módosítás szerint",
     "sortByName": "Rendezés név szerint",
     "sortBySize": "Rendezés méret szerint",
-    "noPreview": "Ehhez a fájlhoz nincs előnézet."
+    "noPreview": "Ehhez a fájlhoz nincs előnézet.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "mappa vagy fájl kijelölése",
@@ -100,7 +104,11 @@
     "submit": "Belépés",
     "username": "Felhasználói név",
     "usernameTaken": "A felhasználói név már foglalt",
-    "wrongCredentials": "Hibás hitelesítő adatok"
+    "wrongCredentials": "Hibás hitelesítő adatok",
+    "passwordTooShort": "Password must be at least {min} characters",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Állandó",
   "prompts": {
@@ -154,6 +162,7 @@
     "video": "Videó"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Adminisztrátor",
     "allowCommands": "Parancsok futtatása",
@@ -161,6 +170,7 @@
     "allowNew": "Új fájlok és mappák létrehozása",
     "allowPublish": "Új bejegyzések és oldalak létrehozása",
     "allowSignup": "Felhasználók regisztrációjának engedélyezése",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(üresen hagyva nincs változás)",
     "branding": "Márkázás",
     "brandingDirectoryPath": "Márkázás mappaútvonala",
@@ -262,5 +272,10 @@
     "minutes": "Perc",
     "seconds": "Másodperc",
     "unit": "Időegység"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }

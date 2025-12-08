@@ -42,7 +42,9 @@
     "update": "تحديث",
     "upload": "رفع",
     "openFile": "فتح الملف",
-    "discardChanges": "إلغاء التغييرات"
+    "discardChanges": "إلغاء التغييرات",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "تحميل الملف",
@@ -74,7 +76,9 @@
     "sortByLastModified": "الترتيب بآخر تعديل",
     "sortByName": "الترتيب باﻹسم",
     "sortBySize": "الترتيب بالحجم",
-    "noPreview": "لا يوجد عرض مسبق لهذا الملف."
+    "noPreview": "لا يوجد عرض مسبق لهذا الملف.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "حدد الملف أو المجلد",
@@ -100,7 +104,11 @@
     "submit": "تسجيل دخول",
     "username": "إسم المستخدم",
     "usernameTaken": "إسم المستخدم غير متاح",
-    "wrongCredentials": "بيانات دخول خاطئة"
+    "wrongCredentials": "بيانات دخول خاطئة",
+    "passwordTooShort": "Password must be at least {min} characters",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "دائم",
   "prompts": {
@@ -154,6 +162,7 @@
     "video": "فيديوهات"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "إدارة",
     "administrator": "مدير",
     "allowCommands": "تنفيذ اﻷوامر",
@@ -161,6 +170,7 @@
     "allowNew": "إنشاء ملفات و مجلدات جديدة",
     "allowPublish": "نشر مقالات و صفحات جديدة",
     "allowSignup": "اسمح للمستخدمين بالاشتراك",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(أتركه فارغاً إن لم ترد تغييره)",
     "branding": "الشعار",
     "brandingDirectoryPath": "مسار مجلد الشعار",
@@ -262,5 +272,10 @@
     "minutes": "دقائق",
     "seconds": "ثواني",
     "unit": "وحدة الوقت"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }

@@ -42,7 +42,9 @@
     "update": "Cập nhật",
     "upload": "Tải lên",
     "openFile": "Mở tệp",
-    "discardChanges": "Hủy bỏ thay đổi"
+    "discardChanges": "Hủy bỏ thay đổi",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Tải xuống tệp tin",
@@ -74,7 +76,9 @@
     "sortByLastModified": "Sắp xếp theo ngày sửa đổi",
     "sortByName": "Sắp xếp theo tên",
     "sortBySize": "Sắp xếp theo kích thước",
-    "noPreview": "Không có bản xem trước cho tập tin này."
+    "noPreview": "Không có bản xem trước cho tập tin này.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "chọn tập tin hoặc thư mục",
@@ -100,7 +104,11 @@
     "submit": "Đăng nhập",
     "username": "Tên người dùng",
     "usernameTaken": "Tên người dùng đã tồn tại",
-    "wrongCredentials": "Thông tin đăng nhập không đúng"
+    "wrongCredentials": "Thông tin đăng nhập không đúng",
+    "passwordTooShort": "Password must be at least {min} characters",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Vĩnh viễn",
   "prompts": {
@@ -154,6 +162,7 @@
     "video": "Video"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Quản trị viên",
     "administrator": "Người quản trị",
     "allowCommands": "Thực thi lệnh",
@@ -161,6 +170,7 @@
     "allowNew": "Tạo tệp và thư mục mới",
     "allowPublish": "Xuất bản bài viết và trang mới",
     "allowSignup": "Cho phép người dùng đăng ký",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(để trống để tránh thay đổi)",
     "branding": "Thương hiệu",
     "brandingDirectoryPath": "Đường dẫn thư mục thương hiệu",
@@ -262,5 +272,10 @@
     "minutes": "Phút",
     "seconds": "Giây",
     "unit": "Đơn vị"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }

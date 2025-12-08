@@ -42,7 +42,9 @@
     "update": "Vista",
     "upload": "Hlaða upp",
     "openFile": "Open file",
-    "discardChanges": "Discard"
+    "discardChanges": "Discard",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Sækja skjal",
@@ -74,7 +76,9 @@
     "sortByLastModified": "Flokka eftir Seinast breytt",
     "sortByName": "Flokka eftir nafni",
     "sortBySize": "Flokka eftir stærð",
-    "noPreview": "Preview is not available for this file."
+    "noPreview": "Preview is not available for this file.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "velja skjal eða möppu",
@@ -100,7 +104,11 @@
     "submit": "Innskráning",
     "username": "Notendanafn",
     "usernameTaken": "Þetta norendanafn er þegar í notkun",
-    "wrongCredentials": "Rangar notendaupplýsingar"
+    "wrongCredentials": "Rangar notendaupplýsingar",
+    "passwordTooShort": "Password must be at least {min} characters",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Varanlegt",
   "prompts": {
@@ -154,6 +162,7 @@
     "video": "Myndbönd"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Stjórnandi",
     "administrator": "Stjórnandi",
     "allowCommands": "Senda skipanir",
@@ -161,6 +170,7 @@
     "allowNew": "Búa til ný skjöl og möppur",
     "allowPublish": "Gefa út nýjar færslur og síður",
     "allowSignup": "Leyfa nýjum notendum að skrá sig",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(engar breytingar ef ekkert er skrifað)",
     "branding": "Útlit",
     "brandingDirectoryPath": "Mappa fyrir branding-skjöl",
@@ -262,5 +272,10 @@
     "minutes": "Mínútur",
     "seconds": "Sekúndur",
     "unit": "Tímastilling"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }

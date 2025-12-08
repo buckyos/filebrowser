@@ -42,7 +42,9 @@
     "update": "更新",
     "upload": "上傳",
     "openFile": "開啟檔案",
-    "discardChanges": "放棄變更"
+    "discardChanges": "放棄變更",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "下載檔案",
@@ -74,7 +76,9 @@
     "sortByLastModified": "按最後修改時間排序",
     "sortByName": "按名稱排序",
     "sortBySize": "按大小排序",
-    "noPreview": "此檔案無法預覽。"
+    "noPreview": "此檔案無法預覽。",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "選擇檔案或目錄",
@@ -100,7 +104,11 @@
     "submit": "登入",
     "username": "帳號",
     "usernameTaken": "用戶名已存在",
-    "wrongCredentials": "帳號或密碼錯誤"
+    "wrongCredentials": "帳號或密碼錯誤",
+    "passwordTooShort": "Password must be at least {min} characters",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "永久",
   "prompts": {
@@ -154,6 +162,7 @@
     "video": "影片"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "管理員",
     "administrator": "管理員",
     "allowCommands": "執行命令",
@@ -161,6 +170,7 @@
     "allowNew": "建立新檔案和目錄",
     "allowPublish": "發佈新的貼文與頁面",
     "allowSignup": "允許使用者註冊",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "（留空以避免更改）",
     "branding": "品牌",
     "brandingDirectoryPath": "品牌資訊資料夾路徑",
@@ -262,5 +272,10 @@
     "minutes": "分鐘",
     "seconds": "秒",
     "unit": "時間單位"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }

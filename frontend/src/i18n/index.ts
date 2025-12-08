@@ -2,17 +2,21 @@ import dayjs from "dayjs";
 import { createI18n } from "vue-i18n";
 
 import("dayjs/locale/ar");
+import("dayjs/locale/bg");
+import("dayjs/locale/cs");
 import("dayjs/locale/de");
 import("dayjs/locale/el");
 import("dayjs/locale/en");
 import("dayjs/locale/es");
 import("dayjs/locale/fr");
 import("dayjs/locale/he");
+import("dayjs/locale/hr");
 import("dayjs/locale/hu");
 import("dayjs/locale/is");
 import("dayjs/locale/it");
 import("dayjs/locale/ja");
 import("dayjs/locale/ko");
+import("dayjs/locale/nb");
 import("dayjs/locale/nl-be");
 import("dayjs/locale/pl");
 import("dayjs/locale/pt-br");
@@ -26,8 +30,6 @@ import("dayjs/locale/uk");
 import("dayjs/locale/vi");
 import("dayjs/locale/zh-cn");
 import("dayjs/locale/zh-tw");
-import("dayjs/locale/cs");
-import("dayjs/locale/nb");
 
 // All i18n resources specified in the plugin `include` option can be loaded
 // at once using the import syntax
@@ -40,6 +42,9 @@ export function detectLocale() {
   switch (true) {
     case /^he\b/.test(locale):
       locale = "he";
+      break;
+    case /^hr\b/.test(locale):
+      locale = "hr";
       break;
     case /^hu\b/.test(locale):
       locale = "hu";
@@ -105,6 +110,7 @@ export function detectLocale() {
     case /^uk\b/.test(locale):
       locale = "uk";
       break;
+
     case /^vi\b/.test(locale):
       locale = "vi";
       break;
@@ -118,6 +124,9 @@ export function detectLocale() {
     case /^nb\b/.test(locale):
     case /^no\b/.test(locale):
       locale = "no";
+      break;
+    case /^bg\b/.test(locale):
+      locale = "bg";
       break;
     default:
       locale = "en";

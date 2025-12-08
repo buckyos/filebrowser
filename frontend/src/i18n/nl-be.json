@@ -42,7 +42,9 @@
     "update": "Updaten",
     "upload": "Uploaden",
     "openFile": "Open file",
-    "discardChanges": "Discard"
+    "discardChanges": "Discard",
+    "saveChanges": "Save changes",
+    "editAsText": "Edit as Text"
   },
   "download": {
     "downloadFile": "Bestand downloaden",
@@ -74,7 +76,9 @@
     "sortByLastModified": "Sorteren op laatst bewerkt",
     "sortByName": "Sorteren op naam",
     "sortBySize": "Sorteren op grootte",
-    "noPreview": "Preview is not available for this file."
+    "noPreview": "Preview is not available for this file.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file."
   },
   "help": {
     "click": "selecteer bestand of map",
@@ -100,7 +104,11 @@
     "submit": "Log in",
     "username": "Gebruikersnaam",
     "usernameTaken": "Gebruikersnaam reeds in gebruik",
-    "wrongCredentials": "Verkeerde inloggegevens"
+    "wrongCredentials": "Verkeerde inloggegevens",
+    "passwordTooShort": "Password must be at least {min} characters",
+    "logout_reasons": {
+      "inactivity": "You have been logged out due to inactivity."
+    }
   },
   "permanent": "Permanent",
   "prompts": {
@@ -154,6 +162,7 @@
     "video": "Video"
   },
   "settings": {
+    "aceEditorTheme": "Ace editor theme",
     "admin": "Admin",
     "administrator": "Administrator",
     "allowCommands": "Commando's uitvoeren",
@@ -161,6 +170,7 @@
     "allowNew": "Nieuwe bestanden of mappen aanmaken",
     "allowPublish": "Publiceer nieuwe berichten en pagina's",
     "allowSignup": "Sta gebruikers toe om zich te registreren",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(laat leeg om wijzigingen te voorkomen)",
     "branding": "Branding",
     "brandingDirectoryPath": "Branding directory path",
@@ -262,5 +272,10 @@
     "minutes": "Minuten",
     "seconds": "Seconden",
     "unit": "Tijdseenheid"
+  },
+  "available_csv_separators": {
+    "comma": "Comma (,)",
+    "semicolon": "Semicolon (;)",
+    "both": "Both (,) and (;)"
   }
 }
