@@ -109,7 +109,7 @@ def build_app(os_name, arch_name):
         pkg_version = pkg_meta["version"];
         print(pkg_meta);
 
-        os.rename("filebrowser.exe", os.path.join(sub_pkg_dir, f"filebrowser.exe"));
+        os.rename("filebrowser", os.path.join(sub_pkg_dir, f"filebrowser.exe"));
 
         app_doc["pkg_list"][f"{arch_name}_win_app"]["pkg_id"] = f"{pkg_id}";
         app_doc["deps"][pkg_id] = pkg_version
