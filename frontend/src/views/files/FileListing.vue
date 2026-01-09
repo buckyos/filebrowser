@@ -292,6 +292,12 @@
             @action="download"
             :counter="fileStore.selectedCount"
           />
+          <action
+            v-if="headerButtons.publish"
+            icon="publish"
+            :label="t('buttons.publish')"
+            @action="publish"
+          />
           <action icon="info" :label="t('buttons.info')" show="info" />
         </context-menu>
 
@@ -336,7 +342,7 @@ import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 
 import { users, files as api } from "@/api";
-import { enableExec } from "@/utils/constants";
+import { enableExec, publishURL } from "@/utils/constants";
 import * as upload from "@/utils/upload";
 import css from "@/utils/css";
 import { throttle } from "lodash-es";
@@ -470,6 +476,7 @@ const headerButtons = computed(() => {
     share: fileStore.selectedCount === 1 && authStore.user?.perm.share,
     move: fileStore.selectedCount > 0 && authStore.user?.perm.rename,
     copy: fileStore.selectedCount > 0 && authStore.user?.perm.create,
+    publish: fileStore.selectedCount === 1,
   };
 });
 
@@ -1048,4 +1055,31 @@ const showContextMenu = (event: MouseEvent) => {
 const hideContextMenu = () => {
   isContextMenuVisible.value = false;
 };
+
+const publish = () => {
+  if (fileStore.req === null || fileStore.selectedCount !== 1) return;
+
+  const selectedItem = fileStore.req.items[fileStore.selected[0]];
+  if (!selectedItem) return;
+
+  const itemType = selectedItem.isDir ? "folder" : "file";
+  const currentPath = selectedItem.path || selectedItem.url;
+  
+  // Replace $current_hostname with actual hostname
+  const hostname = window.location.hostname;
+  let url = publishURL.replace("$current_hostname", hostname);
+  
+  // Add path and type parameters
+  const params = new URLSearchParams();
+  params.append("path", currentPath);
+  params.append("type", itemType);
+  
+  url = url + (url.includes("?") ? "&" : "?") + params.toString();
+  
+  // Open in new window
+  window.open(url, "publish");
+  
+  hideContextMenu();
+};
+
 </script>

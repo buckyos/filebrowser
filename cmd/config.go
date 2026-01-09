@@ -55,6 +55,7 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("branding.theme", "", "set the theme")
 	flags.String("branding.color", "", "set the theme color")
 	flags.String("branding.files", "", "path to directory with images and custom styles")
+	flags.String("branding.publishURL", "", "URL template for publishing files")
 	flags.Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 	flags.Bool("branding.disableUsedPercentage", false, "disable used disk percentage graph")
 
@@ -214,6 +215,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tDisable used disk percentage graph:\t%t\n", set.Branding.DisableUsedPercentage)
 	fmt.Fprintf(w, "\tColor:\t%s\n", set.Branding.Color)
 	fmt.Fprintf(w, "\tTheme:\t%s\n", set.Branding.Theme)
+	fmt.Fprintf(w, "\tPublish URL:\t%s\n", set.Branding.PublishURL)
 
 	fmt.Fprintln(w, "\nServer:")
 	fmt.Fprintf(w, "\tLog:\t%s\n", ser.Log)
@@ -340,6 +342,8 @@ func getSettings(flags *pflag.FlagSet, set *settings.Settings, ser *settings.Ser
 			set.Branding.Color, err = flags.GetString(flag.Name)
 		case "branding.files":
 			set.Branding.Files, err = flags.GetString(flag.Name)
+		case "branding.publishURL":
+			set.Branding.PublishURL, err = flags.GetString(flag.Name)
 		case "branding.disableExternal":
 			set.Branding.DisableExternal, err = flags.GetBool(flag.Name)
 		case "branding.disableUsedPercentage":
