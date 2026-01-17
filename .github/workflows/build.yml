@@ -59,7 +59,7 @@ jobs:
             run: |
               python3 pack_dapp.py
             env:
-                BUCKYOS_CLI_PATH: ${{github.workspace}}/buckycli
+                BUCKYCLI_PATH: ${{github.workspace}}/buckycli
           - name: Tar Dapp Package
             run: |
               tar -zvcf filebrowser.tar.gz -C /opt/buckyosci/apps buckyos_filebrowser
