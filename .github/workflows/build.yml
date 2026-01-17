@@ -38,10 +38,10 @@ jobs:
           - name: Write Identify File
             run: |
               mkdir -p ~/.buckycli
-              base64 -d <<< ${{github.secrets.NODE_IDENTIFY_BASE64}} > ~/.buckycli/node_identify.json
-              base64 -d <<< ${{github.secrets.NODE_PRIVATE_KEY_BASE64}} > ~/.buckycli/node_private_key.pem
-              base64 -d <<< ${{github.secrets.USER_CONFIG_BASE64}} > ~/.buckycli/user_config.json
-              base64 -d <<< ${{github.secrets.USER_PRIVATE_KEY_BASE64}} > ~/.buckycli/user_private_key.pem
+              echo "${{github.secrets.NODE_IDENTIFY_BASE64}}" | base64 -d > ~/.buckycli/node_identify.json
+              echo "${{github.secrets.NODE_PRIVATE_KEY_BASE64}}" | base64 -d > ~/.buckycli/node_private_key.pem
+              echo "${{github.secrets.USER_CONFIG_BASE64}}" | base64 -d > ~/.buckycli/user_config.json
+              echo "${{github.secrets.USER_PRIVATE_KEY_BASE64}}" | base64 -d > ~/.buckycli/user_private_key.pem
           - name: Pack Dapp
             run: |
               python3 pack_dapp.py
