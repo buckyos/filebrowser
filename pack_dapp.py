@@ -15,14 +15,14 @@ docker_username = "buckyos";
 print("APP_DOC: ", app_doc);
 version = app_doc["version"];
 app_name = app_doc["pkg_name"];
-app_base_dir = "/opt/buckyosci/apps/"
-app_raw_dir = "/opt/buckyosci/app_build/"
+build_root_dir = os.getenv("BUCKYOS_BUILD_ROOT", "/opt/buckyosci")
+app_base_dir = os.path.join(build_root_dir, "apps")
+app_raw_dir = os.path.join(build_root_dir, "app_build")
 build_target_dir = os.path.join(app_raw_dir, app_name, version);
 app_pkg_dir = os.path.join(app_base_dir, app_name, version);
 
-buckycli_path = os.path.join("/opt/buckyos/bin/buckycli", "buckycli")
-if platform.system() == "Windows":
-    buckycli_path += ".exe"
+# 如果有定义BUCKYCLI_PATH环境变量，就使用这个变量作为CLI的执行文件, 否则默认在linux下，使用默认路径
+buckycli_path = os.getenv("BUCKYCLI_PATH", "/opt/buckyos/bin/buckycli/buckycli")
 
 def get_default_pkg_dir():
     return app_pkg_dir;
@@ -50,7 +50,7 @@ def pack_packages(input_dir, target_dir):
         try:
             with open(meta_file, 'r') as f:
                 meta_data = json.load(f)
-                if "pkg_name" not in meta_data or "version" not in meta_data:
+                if "name" not in meta_data or "version" not in meta_data:
                     print(f"跳过 {pkg_path}: pkg_meta.json 缺少必要字段")
                     continue
                     

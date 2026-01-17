@@ -16,8 +16,9 @@ docker_username = "buckyos";
 print("APP_DOC: ", app_doc);
 version = app_doc["version"];
 app_name = app_doc["pkg_name"];
-app_base_dir = "/opt/buckyosci/apps/"
-app_raw_dir = "/opt/buckyosci/app_build/"
+build_root_dir = os.getenv("BUCKYOS_BUILD_ROOT", "/opt/buckyosci")
+app_base_dir = os.path.join(build_root_dir, "apps")
+app_raw_dir = os.path.join(build_root_dir, "app_build")
 platform_name = platform.system().lower()
 if platform_name == "windows":
     sys_temp_dir = tempfile.gettempdir()
@@ -30,9 +31,10 @@ all_images = [];
 
 def process_pkg_meta(pkg_meta_path,new_path,pkg_name):
     pkg_meta = json.load(open(pkg_meta_path));
-    pkg_meta["pub_time"] = int(time.time())
+    pkg_meta["create_time"] = int(time.time())
+    pkg_meta["last_update_time"] = pkg_meta["create_time"]
     pkg_meta["exp"] = int(time.time()) + 3600 * 24 * 365 * 3
-    pkg_meta["pkg_name"] = pkg_name 
+    pkg_meta["name"] = pkg_name 
     json.dump(pkg_meta, open(new_path, "w"));
     return pkg_meta;
 
@@ -73,7 +75,10 @@ def build_app(os_name, arch_name):
         pkg_meta = process_pkg_meta("./publish/docker_pkg_meta.json", f"{sub_pkg_dir}/pkg_meta.json", pkg_id);
         pkg_version = pkg_meta["version"];
         image_name = f"{docker_username}/nightly-{app_name}:{pkg_version}-{arch_name}"
-        result = subprocess.run(["docker", "buildx", "build", "--platform", f"linux/{arch_name}", "-t", image_name, "-f",docker_file,"."])
+        # 加--load参数以便在本地加载镜像, 后续可以save
+        cmd = ["docker", "buildx", "build", "--load", "--platform", f"linux/{arch_name}", "-t", image_name, "-f",docker_file,"."]
+        print("Running command: ", " ".join(cmd))
+        result = subprocess.run(cmd)
         if result.returncode != 0:
             print(f"Docker构建失败: {os_name}-{arch_name}")
             sys.exit(1)
@@ -151,7 +156,7 @@ def main():
     
     app_doc["pub_time"] = int(time.time())
     app_doc["exp"] = int(time.time()) + 3600 * 24 * 365 * 3
-    json.dump(app_doc, open(f"{output_dir}/app.doc.json", "w"));
+    json.dump(app_doc, open(f"{output_dir}/{app_name}.doc.json", "w"));
     print(f"packed app_doc: {app_doc}");
     print("\n--------------------------------");
     print("^ ^ all build done ^ ^, output dir: ", output_dir);
