@@ -14,7 +14,7 @@ jobs:
           - name: Write Identify File
             run: |
               mkdir -p ~/.buckycli
-              echo "${{secrets.NODE_IDENTIFY_BASE64}}" | base64 -d > ~/.buckycli/node_identify.json
+              echo "${{secrets.NODE_IDENTIFY_BASE64}}" | base64 -d > ~/.buckycli/node_identity.json
               echo "${{secrets.NODE_PRIVATE_KEY_BASE64}}" | base64 -d > ~/.buckycli/node_private_key.pem
               echo "${{secrets.USER_CONFIG_BASE64}}" | base64 -d > ~/.buckycli/user_config.json
               echo "${{secrets.USER_PRIVATE_KEY_BASE64}}" | base64 -d > ~/.buckycli/user_private_key.pem
