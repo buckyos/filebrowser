@@ -1,0 +1,75 @@
+name: Build Filebrowser for Buckyos App
+
+on:
+    workflow_dispatch:
+
+jobs:
+    build-all-platforms:
+        name: Build All Platforms
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v6
+            with:
+              fetch-depth: 0
+          - name: Write Identify File
+            run: |
+              mkdir -p ~/.buckycli
+              echo "${{secrets.NODE_IDENTIFY_BASE64}}" | base64 -d > ~/.buckycli/node_identity.json
+              echo "${{secrets.NODE_PRIVATE_KEY_BASE64}}" | base64 -d > ~/.buckycli/node_private_key.pem
+              echo "${{secrets.USER_CONFIG_BASE64}}" | base64 -d > ~/.buckycli/user_config.json
+              echo "${{secrets.USER_PRIVATE_KEY_BASE64}}" | base64 -d > ~/.buckycli/user_private_key.pem
+          - name: Download Buckycli
+            uses: actions/download-artifact@v5
+            with:
+                name: buckyos-tools-linux-amd64-0.5.1+build260116
+                github-token: ${{ secrets.GITHUB_TOKEN }}
+                repository: buckyos/buckyos
+                run-id: 21052409212
+                path: ${{github.workspace}}
+          - name: Check Buckycli and Identify Files
+            run: |
+              ls -la ~/.buckycli
+              ls -la ${{github.workspace}}/buckycli
+              chmod +x ${{github.workspace}}/buckycli
+          - uses: actions/setup-go@v6
+            with:
+              go-version: '1.25'
+          - name: Install Task
+            uses: go-task/setup-task@v1
+          - name: Setup pnpm
+            uses: pnpm/action-setup@v4
+            with:
+                version: "latest"
+          - uses: actions/setup-node@v6
+            with:
+              node-version: "24.x"
+          - name: Set up QEMU
+            uses: docker/setup-qemu-action@v3
+          - name: Set up Docker Buildx
+            uses: docker/setup-buildx-action@v3
+          - name: Get Dapp Version
+            id: get_version
+            run: |
+              VERSION=$(python3 -c "import json; print(json.load(open('publish/app_pkg/pkg_meta.json'))['version'])")
+              echo "DAPP_VERSION=$VERSION" >> $GITHUB_OUTPUT
+          - name: Build Filebrowser Dapp
+            run: |
+              python3 build_dapp.py
+          - name: Pack Dapp
+            run: |
+              python3 pack_dapp.py
+            env:
+                BUCKYCLI_PATH: ${{github.workspace}}/buckycli
+          - name: Tar Dapp Package
+            run: |
+              tar -zvcf filebrowser.tar.gz -C /opt/buckyosci/apps buckyos_filebrowser
+          - name: Generate Release
+            uses: softprops/action-gh-release@v1
+            with:
+              tag_name: ${{ steps.get_version.outputs.DAPP_VERSION }}
+              name: filebrowser-${{ steps.get_version.outputs.DAPP_VERSION }}
+              generate_release_notes: true
+              fail_on_unmatched_files: true
+              files: filebrowser.tar.gz
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
