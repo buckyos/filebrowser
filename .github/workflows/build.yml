@@ -11,6 +11,26 @@ jobs:
           - uses: actions/checkout@v6
             with:
               fetch-depth: 0
+          - name: Write Identify File
+            run: |
+              mkdir -p ~/.buckycli
+              echo "${{github.secrets.NODE_IDENTIFY_BASE64}}" | base64 -d > ~/.buckycli/node_identify.json
+              echo "${{github.secrets.NODE_PRIVATE_KEY_BASE64}}" | base64 -d > ~/.buckycli/node_private_key.pem
+              echo "${{github.secrets.USER_CONFIG_BASE64}}" | base64 -d > ~/.buckycli/user_config.json
+              echo "${{github.secrets.USER_PRIVATE_KEY_BASE64}}" | base64 -d > ~/.buckycli/user_private_key.pem
+          - name: Download Buckycli
+            uses: actions/download-artifact@v5
+            with:
+                name: buckyos-tools-linux-amd64-0.5.1+build260116
+                github-token: ${{ secrets.GITHUB_TOKEN }}
+                repository: buckyos/buckyos
+                run-id: 21052409212
+                path: ${{github.workspace}}
+          - name: Check Buckycli and Identify Files
+            run: |
+              ls -la ~/.buckycli
+              ls -la ${{github.workspace}}/buckycli
+              chmod +x ${{github.workspace}}/buckycli
           - uses: actions/setup-go@v6
             with:
               go-version: '1.25'
@@ -35,26 +55,6 @@ jobs:
           - name: Build Filebrowser Dapp
             run: |
               python3 build_dapp.py
-          - name: Write Identify File
-            run: |
-              mkdir -p ~/.buckycli
-              echo "${{github.secrets.NODE_IDENTIFY_BASE64}}" | base64 -d > ~/.buckycli/node_identify.json
-              echo "${{github.secrets.NODE_PRIVATE_KEY_BASE64}}" | base64 -d > ~/.buckycli/node_private_key.pem
-              echo "${{github.secrets.USER_CONFIG_BASE64}}" | base64 -d > ~/.buckycli/user_config.json
-              echo "${{github.secrets.USER_PRIVATE_KEY_BASE64}}" | base64 -d > ~/.buckycli/user_private_key.pem
-          - name: Download Buckycli
-            uses: actions/download-artifact@v5
-            with:
-                name: buckyos-tools-linux-amd64-0.5.1+build260116
-                github-token: ${{ secrets.GITHUB_TOKEN }}
-                repository: buckyos/buckyos
-                run-id: 21052409212
-                path: ${{github.workspace}}
-          - name: Check Buckycli and Identify Files
-            run: |
-              ls -la ~/.buckycli
-              ls -la ${{github.workspace}}/buckycli
-              chmod +x ${{github.workspace}}/buckycli
           - name: Pack Dapp
             run: |
               python3 pack_dapp.py
