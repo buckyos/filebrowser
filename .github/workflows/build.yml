@@ -1,0 +1,58 @@
+name: Build Filebrowser for Buckyos App
+
+on:
+    workflow_dispatch:
+
+jobs:
+    build-all-platforms:
+        name: Build All Platforms
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v6
+            with:
+              fetch-depth: 0
+          - uses: actions/setup-go@v6
+            with:
+              go-version: '1.25'
+          - name: Install Task
+            uses: go-task/setup-task@v1
+          - uses: actions/setup-node@v6
+            with:
+              node-version: "24.x"
+              cache: "pnpm"
+              cache-dependency-path: "frontend/pnpm-lock.yaml"
+          - name: Set up QEMU
+            uses: docker/setup-qemu-action@v3
+          - name: Set up Docker Buildx
+            uses: docker/setup-buildx-action@v3
+          - name: Get Dapp Version
+            id: get_version
+            run: |
+              VERSION=$(python3 -c "import json; print(json.load(open('publish/app_pkg/pkg_meta.json'))['version'])")
+              echo "DAPP_VERSION=$VERSION" >> $GITHUB_OUTPUT
+          - name: Build Filebrowser Dapp
+            run: |
+              python3 build_dapp.py
+          - name: Write Identify File
+            run: |
+              mkdir -p ~/.buckycli
+              base64 -d <<< ${{github.secrets.NODE_IDENTIFY_BASE64}} > ~/.buckycli/node_identify.json
+              base64 -d <<< ${{github.secrets.NODE_PRIVATE_KEY_BASE64}} > ~/.buckycli/node_private_key.pem
+              base64 -d <<< ${{github.secrets.USER_CONFIG_BASE64}} > ~/.buckycli/user_config.json
+              base64 -d <<< ${{github.secrets.USER_PRIVATE_KEY_BASE64}} > ~/.buckycli/user_private_key.pem
+          - name: Pack Dapp
+            run: |
+              python3 pack_dapp.py
+          - name: Tar Dapp Package
+            run: |
+              tar -zvcf filebrowser.tar.gz -C /opt/buckyosci/apps buckyos_filebrowser
+          - name: Generate Release
+            uses: softprops/action-gh-release@v1
+            with:
+              tag_name: v${{ steps.get_version.outputs.DAPP_VERSION }}
+              name: filebrowser-v${{ steps.get_version.outputs.DAPP_VERSION }}
+              generate_release_notes: true
+              fail_on_unmatched_files: true
+              files: filebrowser.tar.gz
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
