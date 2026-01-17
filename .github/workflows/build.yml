@@ -66,8 +66,8 @@ jobs:
           - name: Generate Release
             uses: softprops/action-gh-release@v1
             with:
-              tag_name: v${{ steps.get_version.outputs.DAPP_VERSION }}
-              name: filebrowser-v${{ steps.get_version.outputs.DAPP_VERSION }}
+              tag_name: ${{ steps.get_version.outputs.DAPP_VERSION }}
+              name: filebrowser-${{ steps.get_version.outputs.DAPP_VERSION }}
               generate_release_notes: true
               fail_on_unmatched_files: true
               files: filebrowser.tar.gz
