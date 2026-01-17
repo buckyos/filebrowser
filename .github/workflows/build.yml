@@ -49,13 +49,17 @@ jobs:
                 github-token: ${{ secrets.GITHUB_TOKEN }}
                 repository: buckyos/buckyos
                 run-id: 21052409212
-                path: ~
+                path: ${{github.workspace}}
+          - name: Check Buckycli and Identify Files
+            run: |
+              ls -la ~/.buckycli
+              ls -la ${{github.workspace}}/buckycli
+              chmod +x ${{github.workspace}}/buckycli
           - name: Pack Dapp
             run: |
-              chmod +x ~/buckycli
               python3 pack_dapp.py
             env:
-                BUCKYOS_CLI_PATH: ~/buckycli
+                BUCKYOS_CLI_PATH: ${{github.workspace}}/buckycli
           - name: Tar Dapp Package
             run: |
               tar -zvcf filebrowser.tar.gz -C /opt/buckyosci/apps buckyos_filebrowser
