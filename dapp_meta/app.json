@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "did": "did:bns:filebrowser.buckyos",
+  "name": "filebrowser",
+  "version": "0.7.0",
+  "owner": "did:web:buckyos.ai",
+  "author": "did:web:buckyos.ai",
+  "show_name": "BuckyOS File Browser",
+  "categories": [
+    "dapp"
+  ],
+  "permissions": [],
+  "selector_type": "single",
+  "service_config_tips": {
+    "data_mount_points": {
+      "/srv/": null,
+      "/database/": null,
+      "/config/": null
+    },
+    "service_endpoints": {
+      "www": {
+        "protocol": "http",
+        "inner_port": 80,
+        "required": true,
+        "expose": {
+          "route": {
+            "type": "web"
+          },
+          "scope": "",
+          "allow_guest": false
+        }
+      }
+    }
+  }
+}

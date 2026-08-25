@@ -1,169 +1,115 @@
+#!/usr/bin/env python3
+
+import json
+import os
+import shutil
+import subprocess
+from pathlib import Path
 
 
-import os;
-import subprocess;
-import tempfile;
-import platform;
-import json;
-import time;
-import sys;
-########################################################
-# 根据需要修改下面3个
-app_doc = json.load(open("./publish/app.doc.json"));
-is_system_app = True;
-docker_username = "buckyos";
-########################################################
-print("APP_DOC: ", app_doc);
-version = app_doc["version"];
-app_name = app_doc["pkg_name"];
-build_root_dir = os.getenv("BUCKYOS_BUILD_ROOT", "/opt/buckyosci")
-app_base_dir = os.path.join(build_root_dir, "apps")
-app_raw_dir = os.path.join(build_root_dir, "app_build")
-platform_name = platform.system().lower()
-if platform_name == "windows":
-    sys_temp_dir = tempfile.gettempdir()
-else:
-    sys_temp_dir = "/tmp/"
-
-output_dir = os.path.join(app_raw_dir, app_name, version);
-print("OUTPUT: ", output_dir);
-all_images = [];
-
-def process_pkg_meta(pkg_meta_path,new_path,pkg_name):
-    pkg_meta = json.load(open(pkg_meta_path));
-    pkg_meta["create_time"] = int(time.time())
-    pkg_meta["last_update_time"] = pkg_meta["create_time"]
-    pkg_meta["exp"] = int(time.time()) + 3600 * 24 * 365 * 3
-    pkg_meta["name"] = pkg_name 
-    json.dump(pkg_meta, open(new_path, "w"));
-    return pkg_meta;
+PROJECT_DIR = Path(__file__).resolve().parent
+META_DIR = PROJECT_DIR / "dapp_meta"
+DIST_DIR = PROJECT_DIR / "dapp_dist"
 
 
-def create_output_dir(dir_path):
-    subprocess.run(["rm", "-rf", dir_path]);
-    subprocess.run(["mkdir", "-p", dir_path]);
-    return dir_path;
+def run(command: list[str], *, cwd: Path = PROJECT_DIR, env: dict[str, str] | None = None) -> None:
+    print("+", " ".join(command), flush=True)
+    subprocess.run(command, cwd=cwd, env=env, check=True)
 
-def build_web_pages():
-    result = subprocess.run(["task", "build:frontend"])
-    if result.returncode != 0:
-        print("构建前端失败")
-        sys.exit(1)
 
-def build_app(os_name, arch_name):
-    # 设置构建环境变量
-    docker_file = "./Dockerfile.s6"
-    env = os.environ.copy()
-    env["GOOS"] = os_name
-    env["CGO_ENABLED"] = "0"
-    if arch_name == "aarch64":
-        env["GOARCH"] = "arm64"
-        docker_file = "./Dockerfile.s6.aarch64"
+def find_buckyos_tool() -> str:
+    configured = os.environ.get("BUCKYOS_TOOL_PATH")
+    candidates = [configured] if configured else []
+    candidates.extend(
+        [
+            shutil.which("buckyos"),
+            str(PROJECT_DIR.parent / "buckyos" / "src" / "tools" / "buckyos-tool" / "buckyos"),
+        ]
+    )
+    for candidate in candidates:
+        if candidate and Path(candidate).expanduser().is_file():
+            return str(Path(candidate).expanduser().resolve())
+    raise RuntimeError(
+        "buckyos-tool was not found; install the new buckyos command or set BUCKYOS_TOOL_PATH"
+    )
+
+
+def load_build_config() -> tuple[dict, str, str, str]:
+    app = json.loads((META_DIR / "app.json").read_text(encoding="utf-8"))
+    pikg = json.loads((META_DIR / "pikg.json").read_text(encoding="utf-8"))
+    docker_packages = [
+        (name, package)
+        for name, package in pikg["sub_pkgs"].items()
+        if package["source"]["type"] == "docker-image"
+    ]
+    if len(docker_packages) != 1:
+        raise RuntimeError("dapp_meta/pikg.json must contain exactly one Docker image")
+
+    _, package = docker_packages[0]
+    selector = package.get("selector", {})
+    if selector.get("os") != "linux":
+        raise RuntimeError("the File Browser Docker package must target Linux")
+
+    arch = selector.get("arch")
+    if arch == "x86_64":
+        go_arch = "amd64"
+        docker_platform = "linux/amd64"
+    elif arch == "aarch64":
+        go_arch = "arm64"
+        docker_platform = "linux/arm64"
     else:
-        env["GOARCH"] = arch_name
-    
-    result = subprocess.run(["task", "build:backend"], env=env)
-    if result.returncode != 0:
-        print(f"构建后端失败: {os_name}-{arch_name}")
-        sys.exit(1)
+        raise RuntimeError(f"unsupported Docker architecture: {arch}")
 
-    if os_name == "linux":
-        pkg_id = f"nightly-{os_name}-{arch_name}.{app_name}-img";
-        sub_pkg_dir = os.path.join(output_dir, pkg_id);
-        create_output_dir(sub_pkg_dir);
-        print(f"sub_pkg_dir: {sub_pkg_dir} created.")
-        pkg_meta = process_pkg_meta("./publish/docker_pkg_meta.json", f"{sub_pkg_dir}/pkg_meta.json", pkg_id);
-        pkg_version = pkg_meta["version"];
-        image_name = f"{docker_username}/nightly-{app_name}:{pkg_version}-{arch_name}"
-        # 加--load参数以便在本地加载镜像, 后续可以save
-        cmd = ["docker", "buildx", "build", "--load", "--platform", f"linux/{arch_name}", "-t", image_name, "-f",docker_file,"."]
-        print("Running command: ", " ".join(cmd))
-        result = subprocess.run(cmd)
-        if result.returncode != 0:
-            print(f"Docker构建失败: {os_name}-{arch_name}")
-            sys.exit(1)
-
-        # 获取Docker镜像的hash
-        image_hash = subprocess.check_output(["docker", "images", "--no-trunc", "-q", image_name]).decode().strip()
-        print(f"Docker image hash for {image_name}: {image_hash}")
-    
-        # 导出Docker镜像为tar文件
-        tar_file_path = os.path.join(sub_pkg_dir, f"{app_name}.tar")
-        result = subprocess.run(["docker", "save", "-o", tar_file_path, image_name])
-        
-        if result.returncode != 0:
-            print(f"Docker镜像导出失败: {image_name}")
-            sys.exit(1)
-        print(f"Docker image exported to: {tar_file_path}")
-        all_images.append(image_name);
-    
-        # 复制必要的元数据文件到包目录
-
-        app_doc["pkg_list"][f"{arch_name}_docker_image"]["pkg_id"] = f"{pkg_id}";
-        app_doc["pkg_list"][f"{arch_name}_docker_image"]["docker_image_name"] = f"buckyos/nightly-{app_name}:{version}-{arch_name}"
-        #app_doc["pkg_list"][f"{arch_name}_docker_image"]["docker_image_hash"] = image_hash;
-        app_doc["deps"][pkg_id] = pkg_version
-
-    if os_name == "windows":
-        pkg_id = f"nightly-{os_name}-{arch_name}.{app_name}-bin";
-        sub_pkg_dir = os.path.join(output_dir, pkg_id);
-        create_output_dir(sub_pkg_dir);
-        #复制./publish/app_pkg/的所有文件到sub_pkg_dir
-        os.system(f"cp ./publish/app_pkg/* {sub_pkg_dir}")
-        pkg_meta = process_pkg_meta("./publish/app_pkg/pkg_meta.json", f"{sub_pkg_dir}/pkg_meta.json", pkg_id);
-        pkg_version = pkg_meta["version"];
-        print(pkg_meta);
-
-        os.rename("filebrowser", os.path.join(sub_pkg_dir, f"filebrowser.exe"));
-
-        app_doc["pkg_list"][f"{arch_name}_win_app"]["pkg_id"] = f"{pkg_id}";
-        app_doc["deps"][pkg_id] = pkg_version
-     
-    if os_name == "darwin":
-        pkg_id = f"nightly-apple-{arch_name}.{app_name}-bin";
-        sub_pkg_dir = os.path.join(output_dir, pkg_id);
-        create_output_dir(sub_pkg_dir);
-        os.system(f"cp ./publish/app_pkg/* {sub_pkg_dir}")
-        pkg_meta = process_pkg_meta("./publish/app_pkg/pkg_meta.json", f"{sub_pkg_dir}/pkg_meta.json", pkg_id);
-        pkg_version = pkg_meta["version"];
-        print(pkg_meta);
-
-        os.rename("filebrowser", os.path.join(sub_pkg_dir, f"filebrowser"));
-
-        app_doc["pkg_list"][f"{arch_name}_apple_app"]["pkg_id"] = f"{pkg_id}";
-        app_doc["deps"][pkg_id] = pkg_version
-    
+    return app, package["source"]["image"], go_arch, docker_platform
 
 
-def main():
-    build_web_pages();
+def git_commit() -> str:
+    result = subprocess.run(
+        ["git", "log", "-n", "1", "--format=%h"],
+        cwd=PROJECT_DIR,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    return result.stdout.strip()
 
-    create_output_dir(output_dir);
-    app_doc["deps"] = {};
 
-    build_app("linux", "amd64");
-    print("#=> linux amd64 build done");
-    build_app("linux", "aarch64");
-    print("#=> linux aarch64 build done");
+def main() -> None:
+    app, image_name, go_arch, docker_platform = load_build_config()
+    buckyos_tool = find_buckyos_tool()
 
-    if is_system_app:
-        build_app("windows", "amd64");
-        print("#=> windows amd64 build done");
-        build_app("darwin", "amd64");
-        print("#=> darwin amd64 build done");
-        build_app("darwin", "aarch64");
-        print("#=> darwin aarch64 build done");
-    
-    app_doc["pub_time"] = int(time.time())
-    app_doc["exp"] = int(time.time()) + 3600 * 24 * 365 * 3
-    json.dump(app_doc, open(f"{output_dir}/{app_name}.doc.json", "w"));
-    print(f"packed app_doc: {app_doc}");
-    print("\n--------------------------------");
-    print("^ ^ all build done ^ ^, output dir: ", output_dir);
-    for image in all_images:
-        print(f"  - create docker image: {image}");
-    # 使用buckycli pub_pkg 发布pkg到zone内
+    run(["pnpm", "install", "--frozen-lockfile"], cwd=PROJECT_DIR / "frontend")
+    run(["pnpm", "run", "build"], cwd=PROJECT_DIR / "frontend")
+
+    build_env = os.environ.copy()
+    build_env.update({"CGO_ENABLED": "0", "GOOS": "linux", "GOARCH": go_arch})
+    ldflags = (
+        f'-s -w -X "github.com/filebrowser/filebrowser/v2/version.Version={app["version"]}" '
+        f'-X "github.com/filebrowser/filebrowser/v2/version.CommitSHA={git_commit()}"'
+    )
+    run(["go", "build", "-ldflags", ldflags, "-o", "filebrowser", "."], env=build_env)
+    run(
+        [
+            "docker",
+            "build",
+            "--platform",
+            docker_platform,
+            "--tag",
+            image_name,
+            "--file",
+            "Dockerfile",
+            ".",
+        ]
+    )
+
+    run([buckyos_tool, "--non-interactive", "pikg", "build", str(META_DIR)])
+    run([buckyos_tool, "--non-interactive", "pikg", "pack", str(DIST_DIR)])
+    pikg_path = DIST_DIR / json.loads(
+        (META_DIR / "pikg.json").read_text(encoding="utf-8")
+    )["pikg_file"]
+    run([buckyos_tool, "--non-interactive", "pikg", "info", str(pikg_path)])
+    print(f"PIKG created: {pikg_path}")
+
+
 if __name__ == "__main__":
-    main();
-
-
+    main()

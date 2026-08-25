@@ -6,6 +6,8 @@ rice-box.go
 /filebrowser
 /filebrowser.exe
 /dist
+/dapp_dist
+/.buckyos-source
 .venv
 
 .DS_Store

@@ -1,26 +1,43 @@
-以下说明适用于linux机器
+# 构建 BuckyOS PIKG
+
+File Browser 使用新版 `buckyos-tool` 的本地 PIKG 工作流。构建过程会把本地 Docker
+镜像完整写入 `.pikg`，不需要先把镜像发布到 Docker Hub 或其它镜像仓库。
 
 ## 准备依赖
-- go task: https://taskfile.dev/docs/installation
-- nodejs and pnpm: https://nodejs.org/zh-cn/download
-- go: https://go.dev/doc/install
-- 正确安装官方docker，需要buildx-plugin
-- 执行`docker buildx create --use`
-- `docker run --rm --privileged multiarch/qemu-user-static --reset -p yes`启用多平台支持
-- 准备正确版本的buckycli程序和身份信息，打包环节需要用到
 
-## 修改appdoc文件
-修改`./publish/app.doc.json`文件：
-- pkg_name: app包名，同一owner的包名必须不同
-- version：版本号。推荐使用符合semver规则的三位数字版本号
+- Go 1.25
+- Node.js 24 和 pnpm 10
+- 可用的 Docker daemon
+- Deno 2.2 或更高版本
+- 新版 `buckyos` 命令（`buckyos-tool`）
 
-## 编译-打包-发布流程
-1. 在根目录下执行python3 build_dapp.py进行全平台编译
-   > 可以配置环境变量BUCKYOS_BUILD_ROOT，指定编译结果的输出目录。默认为`/opt/buckyosci`
-   
-   > 编译结果输出到`${BUCKYOS_BUILD_ROOT}/app_build/${pkg_name}${version}`
-2. 在根目录执行python3 pack_dapp.py进行打包操作
-   > 可以通过环境变量BUCKYCLI_PATH指定buckycli程序的位置，默认为`/opt/buckyos/bin/buckycli/buckycli`
-   > 正确的身份文件必须放置在~/.buckycli目录下
+如果 `buckyos` 不在 `PATH`，通过 `BUCKYOS_TOOL_PATH` 指向仓库中的启动脚本：
 
-   > 打包结果输出到`${BUCKYOS_BUILD_ROOT}/app/${pkg_name}${version}`
+```bash
+export BUCKYOS_TOOL_PATH=/path/to/buckyos/src/tools/buckyos-tool/buckyos
+```
+
+在本仓库根目录执行：
+
+```bash
+python3 build_dapp.py
+```
+
+脚本依次构建前端、Linux/amd64 后端和本地镜像
+`local/buckyos-filebrowser:0.7.0-amd64`，然后执行：
+
+```bash
+buckyos pikg build ./dapp_meta
+buckyos pikg pack ./dapp_dist
+buckyos pikg info ./dapp_dist/filebrowser-0.7.0.pikg
+```
+
+最终产物是 `dapp_dist/filebrowser-0.7.0.pikg`。`dapp_dist` 是由工具管理的构建目录，
+不提交到 Git；需要清理时执行：
+
+```bash
+buckyos --non-interactive --yes pikg clean ./dapp_meta
+```
+
+版本升级时同步修改 `dapp_meta/app.json` 中的 `version`，以及
+`dapp_meta/pikg.json` 中的 `pikg_file` 和本地镜像 tag。
