@@ -3,7 +3,7 @@
   "did": "did:bns:filebrowser.buckyos",
   "name": "filebrowser",
   "version": "0.7.0",
-  "owner": "did:web:buckyos.ai",
+  "owner": "did:bns:buckyos",
   "author": "did:web:buckyos.ai",
   "show_name": "BuckyOS File Browser",
   "categories": [
