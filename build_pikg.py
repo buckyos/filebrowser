@@ -12,9 +12,9 @@ META_DIR = PROJECT_DIR / "dapp_meta"
 DIST_DIR = PROJECT_DIR / "dapp_dist"
 
 
-def run(command: list[str], *, cwd: Path = PROJECT_DIR, env: dict[str, str] | None = None) -> None:
+def run(command: list[str]) -> None:
     print("+", " ".join(command), flush=True)
-    subprocess.run(command, cwd=cwd, env=env, check=True)
+    subprocess.run(command, cwd=PROJECT_DIR, check=True)
 
 
 def find_buckyos_tool() -> str:
@@ -34,33 +34,25 @@ def find_buckyos_tool() -> str:
     )
 
 
-def load_build_config() -> tuple[dict, str, str, str]:
+def load_build_config() -> tuple[dict, dict, str, str]:
     app = json.loads((META_DIR / "app.json").read_text(encoding="utf-8"))
     pikg = json.loads((META_DIR / "pikg.json").read_text(encoding="utf-8"))
     docker_packages = [
-        (name, package)
-        for name, package in pikg["sub_pkgs"].items()
+        package
+        for package in pikg["sub_pkgs"].values()
         if package["source"]["type"] == "docker-image"
     ]
     if len(docker_packages) != 1:
         raise RuntimeError("dapp_meta/pikg.json must contain exactly one Docker image")
 
-    _, package = docker_packages[0]
+    package = docker_packages[0]
     selector = package.get("selector", {})
-    if selector.get("os") != "linux":
-        raise RuntimeError("the File Browser Docker package must target Linux")
-
     arch = selector.get("arch")
-    if arch == "x86_64":
-        go_arch = "amd64"
-        docker_platform = "linux/amd64"
-    elif arch == "aarch64":
-        go_arch = "arm64"
-        docker_platform = "linux/arm64"
-    else:
-        raise RuntimeError(f"unsupported Docker architecture: {arch}")
+    platforms = {"x86_64": "linux/amd64", "aarch64": "linux/arm64"}
+    if selector.get("os") != "linux" or arch not in platforms:
+        raise RuntimeError(f"unsupported Docker selector: {selector}")
 
-    return app, package["source"]["image"], go_arch, docker_platform
+    return app, pikg, package["source"]["image"], platforms[arch]
 
 
 def git_commit() -> str:
@@ -75,38 +67,30 @@ def git_commit() -> str:
 
 
 def main() -> None:
-    app, image_name, go_arch, docker_platform = load_build_config()
+    app, pikg, image_name, docker_platform = load_build_config()
     buckyos_tool = find_buckyos_tool()
 
-    run(["pnpm", "install", "--frozen-lockfile"], cwd=PROJECT_DIR / "frontend")
-    run(["pnpm", "run", "build"], cwd=PROJECT_DIR / "frontend")
-
-    build_env = os.environ.copy()
-    build_env.update({"CGO_ENABLED": "0", "GOOS": "linux", "GOARCH": go_arch})
-    ldflags = (
-        f'-s -w -X "github.com/filebrowser/filebrowser/v2/version.Version={app["version"]}" '
-        f'-X "github.com/filebrowser/filebrowser/v2/version.CommitSHA={git_commit()}"'
-    )
-    run(["go", "build", "-ldflags", ldflags, "-o", "filebrowser", "."], env=build_env)
     run(
         [
             "docker",
             "build",
             "--platform",
             docker_platform,
+            "--build-arg",
+            f'APP_VERSION={app["version"]}',
+            "--build-arg",
+            f"GIT_COMMIT={git_commit()}",
             "--tag",
             image_name,
             "--file",
-            "Dockerfile",
+            "image/Dockerfile",
             ".",
         ]
     )
-
     run([buckyos_tool, "--non-interactive", "pikg", "build", str(META_DIR)])
     run([buckyos_tool, "--non-interactive", "pikg", "pack", str(DIST_DIR)])
-    pikg_path = DIST_DIR / json.loads(
-        (META_DIR / "pikg.json").read_text(encoding="utf-8")
-    )["pikg_file"]
+
+    pikg_path = DIST_DIR / pikg["pikg_file"]
     run([buckyos_tool, "--non-interactive", "pikg", "info", str(pikg_path)])
     print(f"PIKG created: {pikg_path}")
 

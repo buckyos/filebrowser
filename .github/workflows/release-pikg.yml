@@ -1,4 +1,4 @@
-name: Build File Browser PIKG
+name: Release File Browser PIKG
 
 on:
   workflow_dispatch:
@@ -6,9 +6,13 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: filebrowser-pikg-release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  build-pikg:
-    name: Build Linux/amd64 PIKG
+  release-pikg:
+    name: Build and release Linux/amd64 PIKG
     runs-on: ubuntu-latest
     steps:
       - name: Check out File Browser
@@ -16,15 +20,19 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Read DApp release metadata
+        id: release
+        run: |
+          VERSION=$(python3 -c "import json; print(json.load(open('dapp_meta/app.json'))['version'])")
+          PIKG_FILE=$(python3 -c "import json; print(json.load(open('dapp_meta/pikg.json'))['pikg_file'])")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "pikg_file=$PIKG_FILE" >> "$GITHUB_OUTPUT"
+
       - name: Check out BuckyOS tool
         uses: actions/checkout@v6
         with:
           repository: buckyos/buckyos
           path: .buckyos-source
-
-      - uses: actions/setup-go@v6
-        with:
-          go-version: "1.25"
 
       - uses: actions/setup-node@v6
         with:
@@ -40,34 +48,25 @@ jobs:
         with:
           deno-version: v2.x
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
       - name: Install BuckyOS tool runtime dependency
         run: pnpm --dir .buckyos-source/src/apps/sys_test install --frozen-lockfile
 
       - name: Build and verify PIKG
-        run: python3 build_dapp.py
+        run: python3 build_pikg.py
         env:
           BUCKYOS_TOOL_PATH: ${{ github.workspace }}/.buckyos-source/src/tools/buckyos-tool/buckyos
 
-      - name: Read DApp version
-        id: version
-        run: |
-          VERSION=$(python3 -c "import json; print(json.load(open('dapp_meta/app.json'))['version'])")
-          echo "value=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Upload PIKG artifact
+      - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: filebrowser-${{ steps.version.outputs.value }}-pikg
-          path: dapp_dist/filebrowser-${{ steps.version.outputs.value }}.pikg
+          name: filebrowser-${{ steps.release.outputs.version }}-pikg
+          path: dapp_dist/${{ steps.release.outputs.pikg_file }}
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.version.outputs.value }}
-          name: filebrowser-${{ steps.version.outputs.value }}
+          tag_name: ${{ steps.release.outputs.version }}
+          name: filebrowser-${{ steps.release.outputs.version }}
           generate_release_notes: true
           fail_on_unmatched_files: true
-          files: dapp_dist/filebrowser-${{ steps.version.outputs.value }}.pikg
+          files: dapp_dist/${{ steps.release.outputs.pikg_file }}

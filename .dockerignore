@@ -1,9 +1,14 @@
 .venv
+.git
+.github
 dist
 .idea
 frontend/node_modules
 frontend/dist
+frontend/test-results
 filebrowser.db
 docs/index.md
+dapp_meta
 dapp_dist
 .buckyos-source
+/filebrowser
