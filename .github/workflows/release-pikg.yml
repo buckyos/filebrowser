@@ -49,7 +49,7 @@ jobs:
           deno-version: v2.x
 
       - name: Install BuckyOS tool runtime dependency
-        run: pnpm --dir .buckyos-source/src/apps/sys_test install --frozen-lockfile
+        run: pnpm --dir .buckyos-source/src/apps/sys_test install --no-frozen-lockfile
 
       - name: Build and verify PIKG
         run: python3 build_pikg.py
