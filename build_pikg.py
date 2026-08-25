@@ -34,25 +34,33 @@ def find_buckyos_tool() -> str:
     )
 
 
-def load_build_config() -> tuple[dict, dict, str, str]:
+def load_build_config() -> tuple[dict, dict, list[tuple[str, str, str]]]:
     app = json.loads((META_DIR / "app.json").read_text(encoding="utf-8"))
     pikg = json.loads((META_DIR / "pikg.json").read_text(encoding="utf-8"))
-    docker_packages = [
-        package
-        for package in pikg["sub_pkgs"].values()
-        if package["source"]["type"] == "docker-image"
-    ]
-    if len(docker_packages) != 1:
-        raise RuntimeError("dapp_meta/pikg.json must contain exactly one Docker image")
-
-    package = docker_packages[0]
-    selector = package.get("selector", {})
-    arch = selector.get("arch")
     platforms = {"x86_64": "linux/amd64", "aarch64": "linux/arm64"}
-    if selector.get("os") != "linux" or arch not in platforms:
-        raise RuntimeError(f"unsupported Docker selector: {selector}")
+    docker_packages: dict[str, tuple[str, str, str]] = {}
+    for package_name, package in pikg["sub_pkgs"].items():
+        if package["source"]["type"] != "docker-image":
+            continue
 
-    return app, pikg, package["source"]["image"], platforms[arch]
+        selector = package.get("selector", {})
+        arch = selector.get("arch")
+        if selector.get("os") != "linux" or arch not in platforms:
+            raise RuntimeError(f"unsupported Docker selector: {selector}")
+        if arch in docker_packages:
+            raise RuntimeError(f"duplicate Docker package for architecture: {arch}")
+        docker_packages[arch] = (
+            package_name,
+            package["source"]["image"],
+            platforms[arch],
+        )
+
+    missing_arches = set(platforms) - set(docker_packages)
+    if missing_arches:
+        missing = ", ".join(sorted(missing_arches))
+        raise RuntimeError(f"dapp_meta/pikg.json is missing Docker architectures: {missing}")
+
+    return app, pikg, [docker_packages[arch] for arch in platforms]
 
 
 def git_commit() -> str:
@@ -66,27 +74,56 @@ def git_commit() -> str:
     return result.stdout.strip()
 
 
-def main() -> None:
-    app, pikg, image_name, docker_platform = load_build_config()
-    buckyos_tool = find_buckyos_tool()
-
-    run(
+def verify_image_platform(image_name: str, expected_platform: str) -> None:
+    result = subprocess.run(
         [
             "docker",
-            "build",
-            "--platform",
-            docker_platform,
-            "--build-arg",
-            f'APP_VERSION={app["version"]}',
-            "--build-arg",
-            f"GIT_COMMIT={git_commit()}",
-            "--tag",
+            "image",
+            "inspect",
+            "--format",
+            "{{.Os}}/{{.Architecture}}",
             image_name,
-            "--file",
-            "image/Dockerfile",
-            ".",
-        ]
+        ],
+        cwd=PROJECT_DIR,
+        text=True,
+        capture_output=True,
+        check=True,
     )
+    actual_platform = result.stdout.strip()
+    if actual_platform != expected_platform:
+        raise RuntimeError(
+            f"Docker image {image_name} has platform {actual_platform}, "
+            f"expected {expected_platform}"
+        )
+
+
+def main() -> None:
+    app, pikg, docker_packages = load_build_config()
+    buckyos_tool = find_buckyos_tool()
+    commit = git_commit()
+
+    for package_name, image_name, docker_platform in docker_packages:
+        print(f"Building {package_name} for {docker_platform}", flush=True)
+        run(
+            [
+                "docker",
+                "buildx",
+                "build",
+                "--platform",
+                docker_platform,
+                "--load",
+                "--build-arg",
+                f'APP_VERSION={app["version"]}',
+                "--build-arg",
+                f"GIT_COMMIT={commit}",
+                "--tag",
+                image_name,
+                "--file",
+                "image/Dockerfile",
+                ".",
+            ]
+        )
+        verify_image_platform(image_name, docker_platform)
     run([buckyos_tool, "--non-interactive", "pikg", "build", str(META_DIR)])
     run([buckyos_tool, "--non-interactive", "pikg", "pack", str(DIST_DIR)])
 

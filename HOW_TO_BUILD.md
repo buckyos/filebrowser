@@ -7,7 +7,8 @@ Docker Hub 或其它镜像仓库。
 
 ## 准备依赖
 
-- 可用的 Docker daemon
+- 可用的 Docker daemon 和 Docker Buildx
+- 能构建 `linux/amd64`、`linux/arm64` 的环境；非 ARM 主机需要 QEMU/binfmt
 - Python 3.10 或更高版本
 - Deno 2.2 或更高版本
 - 新版 `buckyos` 命令（`buckyos-tool`）
@@ -24,8 +25,13 @@ export BUCKYOS_TOOL_PATH=/path/to/buckyos/src/tools/buckyos-tool/buckyos
 python3 build_pikg.py
 ```
 
-脚本通过 `image/Dockerfile` 构造 Linux/amd64 本地镜像
-`local/buckyos-filebrowser:0.7.0-amd64`，然后执行：
+脚本通过 `image/Dockerfile` 构造以下两个本地镜像，并把它们作为两个带平台 selector
+的子包写入同一个 PIKG：
+
+- `local/buckyos-filebrowser:0.7.0-amd64`（Linux/amd64）
+- `local/buckyos-filebrowser:0.7.0-aarch64`（Linux/arm64）
+
+镜像构建完成后执行：
 
 ```bash
 buckyos pikg build ./dapp_meta
@@ -46,6 +52,6 @@ buckyos --non-interactive --yes pikg clean ./dapp_meta
 ## GitHub Release
 
 在 GitHub 仓库的 **Actions → Release File Browser PIKG → Run workflow** 手工触发发布。
-工作流会从 `dapp_meta` 读取版本和产物名，构造并校验 PIKG，上传 workflow artifact，
-再以 DApp 版本创建 Git tag/Release 并附加 `.pikg` 文件。该流程不需要身份文件、
-Docker Registry 凭据或旧版 `buckycli`。
+工作流会配置 QEMU 和 Buildx，从 `dapp_meta` 读取版本和产物名，构造并校验同时包含
+amd64、aarch64 镜像的 PIKG，上传 workflow artifact，再以 DApp 版本创建 Git tag/Release
+并附加 `.pikg` 文件。该流程不需要身份文件、Docker Registry 凭据或旧版 `buckycli`。

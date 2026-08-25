@@ -1,4 +1,4 @@
-FROM node:24-alpine AS frontend-builder
+FROM --platform=$BUILDPLATFORM node:24-alpine AS frontend-builder
 
 WORKDIR /src/frontend
 
@@ -11,10 +11,12 @@ COPY frontend/ ./
 RUN pnpm run build
 
 
-FROM golang:1.25-alpine AS backend-builder
+FROM --platform=$BUILDPLATFORM golang:1.25-alpine AS backend-builder
 
 ARG APP_VERSION
 ARG GIT_COMMIT
+ARG TARGETOS
+ARG TARGETARCH
 
 WORKDIR /src
 
@@ -24,7 +26,7 @@ RUN go mod download
 COPY . ./
 COPY --from=frontend-builder /src/frontend/dist ./frontend/dist
 
-RUN CGO_ENABLED=0 GOOS=linux go build \
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build \
     -ldflags="-s -w -X github.com/filebrowser/filebrowser/v2/version.Version=${APP_VERSION} -X github.com/filebrowser/filebrowser/v2/version.CommitSHA=${GIT_COMMIT}" \
     -o /out/filebrowser .
 

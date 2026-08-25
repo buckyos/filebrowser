@@ -13,6 +13,17 @@
         "type": "docker-image",
         "image": "local/buckyos-filebrowser:0.7.0-amd64"
       }
+    },
+    "aarch64_docker_image": {
+      "selector": {
+        "os": "linux",
+        "arch": "aarch64"
+      },
+      "required": true,
+      "source": {
+        "type": "docker-image",
+        "image": "local/buckyos-filebrowser:0.7.0-aarch64"
+      }
     }
   }
 }
