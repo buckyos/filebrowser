@@ -6,6 +6,8 @@
 
     <div class="card-content">
       <p>{{ t("prompts.uploadMessage") }}</p>
+      <p v-if="!canUploadFolder">Folder selection is unavailable in this browser. You can still upload files.</p>
+      <p v-else>Use drag and drop to preserve empty folders; the folder picker only includes files.</p>
     </div>
 
     <div class="card-action full">
@@ -20,6 +22,7 @@
         <div class="title">{{ t("buttons.file") }}</div>
       </div>
       <div
+        v-if="canUploadFolder"
         @click="uploadFolder"
         @keypress.enter="uploadFolder"
         class="action"
@@ -42,6 +45,7 @@ import * as upload from "@/utils/upload";
 
 const { t } = useI18n();
 const route = useRoute();
+const canUploadFolder = "webkitdirectory" in document.createElement("input");
 
 const fileStore = useFileStore();
 const layoutStore = useLayoutStore();
@@ -49,7 +53,10 @@ const layoutStore = useLayoutStore();
 // TODO: this is a copy of the same function in FileListing.vue
 const uploadInput = (event: Event) => {
   const files = (event.currentTarget as HTMLInputElement)?.files;
-  if (files === null) return;
+  if (!files?.length) {
+    if ((event.currentTarget as HTMLInputElement).webkitdirectory) alert("This browser cannot select an empty folder. Drag the folder into the file list instead.");
+    return;
+  }
 
   const folder_upload = !!files[0].webkitRelativePath;
 

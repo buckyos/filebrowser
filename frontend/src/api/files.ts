@@ -1,7 +1,6 @@
 import { useAuthStore } from "@/stores/auth";
 import { useLayoutStore } from "@/stores/layout";
 import { baseURL } from "@/utils/constants";
-import { upload as postTus, useTus } from "./tus";
 import { createURL, fetchURL, removePrefix, StatusError } from "./utils";
 
 export async function fetch(url: string, signal?: AbortSignal) {
@@ -92,18 +91,8 @@ export async function post(
   overwrite = false,
   onupload: any = () => {}
 ) {
-  // Use the pre-existing API if:
-  const useResourcesApi =
-    // a folder is being created
-    url.endsWith("/") ||
-    // We're not using http(s)
-    (content instanceof Blob &&
-      !["http:", "https:"].includes(window.location.protocol)) ||
-    // Tus is disabled / not applicable
-    !(await useTus(content));
-  return useResourcesApi
-    ? postResources(url, content, overwrite, onupload)
-    : postTus(url, content, overwrite, onupload);
+  if (content instanceof Blob) throw new Error("Use named-object import for file uploads");
+  return postResources(url, content, overwrite, onupload);
 }
 
 async function postResources(

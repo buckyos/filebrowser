@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="uploadStore.activeUploads.size > 0"
+    v-if="uploadStore.activeUploads.size > 0 || uploadStore.failedUploads.length > 0"
     class="upload-files"
     v-bind:class="{ closed: !open }"
   >
@@ -42,6 +42,12 @@
         </button>
       </div>
 
+      <div v-if="uploadStore.failedUploads.length" class="card-content">
+        <p>{{ uploadStore.lastBatch.success }} completed · {{ uploadStore.lastBatch.failed }} failed · {{ uploadStore.lastBatch.cancelled }} cancelled</p>
+        <p v-for="item in uploadStore.failedUploads" :key="item.path">{{ item.name }}: {{ item.error || item.status }} <button @click="renameAndRetry(item)">Retry with a different name</button></p>
+        <button @click="uploadStore.retryFailed">Retry failed or cancelled items</button>
+        <button @click="uploadStore.dismissFailed">Dismiss</button>
+      </div>
       <div class="card-content file-icons">
         <div
           class="file"
@@ -57,7 +63,7 @@
           <div class="file-progress">
             <div
               v-bind:style="{
-                width: (upload.sentBytes / upload.totalBytes) * 100 + '%',
+                width: (upload.totalBytes ? upload.sentBytes / upload.totalBytes : 0) * 100 + '%',
               }"
             ></div>
           </div>
@@ -84,6 +90,10 @@ const eta = ref<number>(Infinity);
 
 const fileStore = useFileStore();
 const uploadStore = useUploadStore();
+const renameAndRetry = (item: Upload) => {
+  const name = window.prompt("Destination name", item.name);
+  if (name !== null) uploadStore.retryWithName(item, name);
+};
 
 const { sentBytes, totalBytes } = storeToRefs(uploadStore);
 
@@ -91,7 +101,7 @@ const byteToMbyte = partial({ exponent: 2 });
 const byteToKbyte = partial({ exponent: 1 });
 
 const sentPercent = computed(() =>
-  ((uploadStore.sentBytes / uploadStore.totalBytes) * 100).toFixed(2)
+  (uploadStore.totalBytes ? (uploadStore.sentBytes / uploadStore.totalBytes) * 100 : 0).toFixed(2)
 );
 
 const sentMbytes = computed(() => byteToMbyte(uploadStore.sentBytes));

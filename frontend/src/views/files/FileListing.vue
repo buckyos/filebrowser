@@ -768,7 +768,7 @@ const drop = async (event: DragEvent) => {
   const dt = event.dataTransfer;
   let el: HTMLElement | null = event.target as HTMLElement;
 
-  if (fileStore.req === null || dt === null || dt.files.length <= 0) return;
+  if (fileStore.req === null || dt === null || (dt.files.length === 0 && ![...dt.items].some(item => item.kind === "file"))) return;
 
   for (let i = 0; i < 5; i++) {
     if (el !== null && !el.classList.contains("item")) {
@@ -776,7 +776,9 @@ const drop = async (event: DragEvent) => {
     }
   }
 
-  const files: UploadList = (await upload.scanFiles(dt)) as UploadList;
+  let files: UploadList;
+  try { files = await upload.scanFiles(dt); } catch (error) { $showError(error instanceof Error ? error : String(error)); return; }
+  if (files.length === 0) return;
   let items = fileStore.req.items;
   let path = route.path.endsWith("/") ? route.path : route.path + "/";
 
@@ -826,7 +828,7 @@ const drop = async (event: DragEvent) => {
 
 const uploadInput = (event: Event) => {
   const files = (event.currentTarget as HTMLInputElement)?.files;
-  if (files === null) return;
+  if (!files?.length) return;
 
   const folder_upload = !!files[0].webkitRelativePath;
 

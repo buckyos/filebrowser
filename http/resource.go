@@ -110,6 +110,10 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 			return errToStatus(err), err
 		}
 
+		if r.ContentLength != 0 {
+			return http.StatusBadRequest, fmt.Errorf("file uploads require named-object import")
+		}
+
 		file, err := files.NewFileInfo(&files.FileOptions{
 			Fs:         d.user.Fs,
 			Path:       r.URL.Path,

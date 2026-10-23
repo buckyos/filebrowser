@@ -60,16 +60,14 @@ func NewHandler(
 	users.Handle("/{id:[0-9]+}", monkey(userGetHandler, "")).Methods("GET")
 	users.Handle("/{id:[0-9]+}", monkey(userDeleteHandler, "")).Methods("DELETE")
 
+	api.PathPrefix("/ndm/").Handler(monkey(namedStoreProxy(), "/api"))
+	api.PathPrefix("/objects").Handler(monkey(namedObjectPostHandler(fileCache), "/api/objects")).Methods("POST")
+
 	api.PathPrefix("/resources").Handler(monkey(resourceGetHandler, "/api/resources")).Methods("GET")
 	api.PathPrefix("/resources").Handler(monkey(resourceDeleteHandler(fileCache), "/api/resources")).Methods("DELETE")
 	api.PathPrefix("/resources").Handler(monkey(resourcePostHandler(fileCache), "/api/resources")).Methods("POST")
 	api.PathPrefix("/resources").Handler(monkey(resourcePutHandler, "/api/resources")).Methods("PUT")
 	api.PathPrefix("/resources").Handler(monkey(resourcePatchHandler(fileCache), "/api/resources")).Methods("PATCH")
-
-	api.PathPrefix("/tus").Handler(monkey(tusPostHandler(), "/api/tus")).Methods("POST")
-	api.PathPrefix("/tus").Handler(monkey(tusHeadHandler(), "/api/tus")).Methods("HEAD", "GET")
-	api.PathPrefix("/tus").Handler(monkey(tusPatchHandler(), "/api/tus")).Methods("PATCH")
-	api.PathPrefix("/tus").Handler(monkey(tusDeleteHandler(), "/api/tus")).Methods("DELETE")
 
 	api.PathPrefix("/usage").Handler(monkey(diskUsage, "/api/usage")).Methods("GET")
 

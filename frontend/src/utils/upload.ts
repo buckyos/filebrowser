@@ -10,6 +10,7 @@ export function checkConflict(
     dest = [];
   }
 
+  if (files.length === 0) return false;
   const folder_upload = files[0].fullPath !== undefined;
 
   const names = new Set<string>();
@@ -30,86 +31,31 @@ export function checkConflict(
   return dest.some((d) => names.has(d.name));
 }
 
-export function scanFiles(dt: DataTransfer): Promise<UploadList | FileList> {
-  return new Promise((resolve) => {
-    let reading = 0;
-    const contents: UploadList = [];
-
-    if (dt.items) {
-      // ts didn't like the for of loop even tho
-      // it is the official example on MDN
-      // for (const item of dt.items) {
-      for (let i = 0; i < dt.items.length; i++) {
-        const item = dt.items[i];
-        if (
-          item.kind === "file" &&
-          typeof item.webkitGetAsEntry === "function"
-        ) {
-          const entry = item.webkitGetAsEntry();
-          entry && readEntry(entry);
-        }
+export async function scanFiles(dt: DataTransfer): Promise<UploadList> {
+  const entries = [...dt.items].filter(item => item.kind === "file").map(item => ({ entry: item.webkitGetAsEntry?.(), file: item.getAsFile() }));
+  const contents: UploadList = [];
+  const read = async (entry: FileSystemEntry, directory = ""): Promise<void> => {
+    const fullPath = `${directory}${entry.name}`;
+    if (entry.isFile) {
+      const file = await new Promise<File>((resolve, reject) => (entry as FileSystemFileEntry).file(resolve, reject));
+      contents.push({ file, name: file.name, size: file.size, isDir: false, fullPath });
+    } else if (entry.isDirectory) {
+      contents.push({ name: entry.name, size: 0, isDir: true, fullPath });
+      const reader = (entry as FileSystemDirectoryEntry).createReader();
+      for (;;) {
+        const children = await new Promise<FileSystemEntry[]>((resolve, reject) => reader.readEntries(resolve, reject));
+        if (children.length === 0) break;
+        for (const child of children) await read(child, `${fullPath}/`);
       }
-    } else {
-      resolve(dt.files);
-    }
-
-    function readEntry(entry: FileSystemEntry, directory = ""): void {
-      if (entry.isFile) {
-        reading++;
-        (entry as FileSystemFileEntry).file((file) => {
-          reading--;
-
-          contents.push({
-            file,
-            name: file.name,
-            size: file.size,
-            isDir: false,
-            fullPath: `${directory}${file.name}`,
-          });
-
-          if (reading === 0) {
-            resolve(contents);
-          }
-        });
-      } else if (entry.isDirectory) {
-        const dir = {
-          isDir: true,
-          size: 0,
-          fullPath: `${directory}${entry.name}`,
-          name: entry.name,
-        };
-
-        contents.push(dir);
-
-        readReaderContent(
-          (entry as FileSystemDirectoryEntry).createReader(),
-          `${directory}${entry.name}`
-        );
-      }
-    }
-
-    function readReaderContent(
-      reader: FileSystemDirectoryReader,
-      directory: string
-    ): void {
-      reading++;
-
-      reader.readEntries((entries) => {
-        reading--;
-        if (entries.length > 0) {
-          for (const entry of entries) {
-            readEntry(entry, `${directory}/`);
-          }
-
-          readReaderContent(reader, `${directory}/`);
-        }
-
-        if (reading === 0) {
-          resolve(contents);
-        }
-      });
-    }
-  });
+    } else throw new Error(`Cannot read dropped entry: ${fullPath}`);
+  };
+  if (entries.length === 0) return [...dt.files].map(file => ({ file, name: file.name, size: file.size, isDir: false }));
+  for (const item of entries) {
+    if (item.entry) await read(item.entry);
+    else if (item.file) contents.push({ file: item.file, name: item.file.name, size: item.file.size, isDir: false });
+    else throw new Error("A dropped entry could not be read");
+  }
+  return contents;
 }
 
 function detectType(mimetype: string): ResourceType {
@@ -131,21 +77,32 @@ export function handleFiles(
 
   layoutStore.closeHovers();
 
-  for (const file of files) {
-    let path = base;
-
-    if (file.fullPath !== undefined) {
-      path += url.encodePath(file.fullPath);
-    } else {
-      path += url.encodeRFC5987ValueChars(file.name);
+  const roots = new Map<string, NamedUploadTree>();
+  const singleFiles: UploadEntry[] = [];
+  for (const item of files) {
+    const segments = (item.fullPath ?? item.name).split("/");
+    if (segments.some(name => !name || name === "." || name === ".." || /[\\\0:]/.test(name))) throw new Error("Invalid upload path");
+    if (segments.length === 1 && !item.isDir) { singleFiles.push(item); continue; }
+    const rootName = segments.shift()!;
+    let root = roots.get(rootName);
+    if (!root) { root = { kind: "dir", name: rootName, children: [] }; roots.set(rootName, root); }
+    let parent = root;
+    const directorySegments = item.isDir ? segments : segments.slice(0, -1);
+    for (const name of directorySegments) {
+      let child = parent.children.find(child => (child.kind === "dir" ? child.name : child.file.name) === name);
+      if (child?.kind === "file") throw new Error(`A file blocks directory ${name}`);
+      if (!child) { child = { kind: "dir", name, children: [] }; parent.children.push(child); }
+      parent = child;
     }
-
-    if (file.isDir) {
-      path += "/";
+    if (!item.isDir) {
+      const file = item.file!;
+      if (parent.children.some(child => (child.kind === "dir" ? child.name : child.file.name) === file.name)) throw new Error(`Duplicate upload name: ${file.name}`);
+      parent.children.push({ kind: "file", file });
     }
-
-    const type = file.isDir ? "dir" : detectType((file.file as File).type);
-
-    uploadStore.upload(path, file.name, file.file ?? null, overwrite, type);
   }
+  for (const file of singleFiles) {
+    if (roots.has(file.name)) throw new Error(`A file conflicts with folder ${file.name}`);
+    uploadStore.upload(base + url.encodeRFC5987ValueChars(file.name), file.name, file.file!, overwrite, detectType(file.file!.type));
+  }
+  for (const tree of roots.values()) uploadStore.upload(base + url.encodeRFC5987ValueChars(tree.name), tree.name, null, overwrite, "dir", tree);
 }

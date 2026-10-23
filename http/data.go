@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/tomasen/realip"
 
@@ -27,6 +28,11 @@ type data struct {
 
 // Check implements rules.Checker.
 func (d *data) Check(path string) bool {
+	for _, segment := range strings.Split(path, "/") {
+		if strings.HasPrefix(segment, ".ndm-import-") {
+			return false
+		}
+	}
 	if d.user.HideDotfiles && rules.MatchHidden(path) {
 		return false
 	}
